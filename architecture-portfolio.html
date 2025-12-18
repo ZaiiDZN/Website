@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture Portfolio (Fall 2025) - zaivion hampden</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+        }
+        
+        .pdf-viewer-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: #000;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .pdf-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3rem;
+            background-color: #ffffff;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .pdf-header-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        
+        .pdf-header-links a {
+            color: rgba(0, 0, 0, 0.64);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 300;
+            text-transform: lowercase;
+            letter-spacing: -0.02em;
+            transition: color 0.3s ease;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        .pdf-header-links a:hover {
+            color: var(--primary-color);
+        }
+        
+        .page-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            margin-top: 3rem;
+            overflow: auto;
+            background-color: #000;
+        }
+        
+        .pdf-container {
+            width: 100%;
+            min-height: 100%;
+            transform-origin: top left;
+            transition: transform 0.1s ease-out;
+            background-color: #000;
+        }
+        
+        .pdf-viewer {
+            width: 100%;
+            min-height: 100vh;
+            border: none;
+            display: block;
+            background-color: #000;
+        }
+        
+        .pdf-viewer iframe {
+            width: 100%;
+            min-height: 100vh;
+            border: none;
+            display: block;
+            background-color: #000;
+        }
+    </style>
+</head>
+<body>
+    <main class="pdf-viewer-page">
+        <div class="pdf-header">
+            <div class="pdf-header-links">
+                <a href="index.html">home</a>
+                <a href="projects.html">back</a>
+            </div>
+        </div>
+        
+        <div class="page-content">
+            <div class="pdf-container" id="pdf-container">
+                <iframe 
+                    class="pdf-viewer" 
+                    src="images/architecture-portfolio/portfolio.pdf#toolbar=0&navpanes=0&scrollbar=0" 
+                    type="application/pdf"
+                    title="Architecture Portfolio (Fall 2025)">
+                    <p>Your browser does not support PDFs. <a href="images/architecture-portfolio/portfolio.pdf">Download the PDF</a>.</p>
+                </iframe>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        let scale = 1;
+        const minScale = 0.25;
+        const maxScale = 5;
+        const scaleStep = 0.1;
+        const container = document.getElementById('pdf-container');
+        const pageContent = document.querySelector('.page-content');
+        
+        if (container && pageContent) {
+            // Trackpad/Mouse wheel zoom
+            pageContent.addEventListener('wheel', (e) => {
+                // Check if Cmd (Mac) or Ctrl (Windows/Linux) is pressed
+                if (e.metaKey || e.ctrlKey) {
+                    e.preventDefault();
+                    
+                    const delta = e.deltaY > 0 ? -scaleStep : scaleStep;
+                    scale = Math.max(minScale, Math.min(maxScale, scale + delta));
+                    container.style.transform = `scale(${scale})`;
+                }
+            }, { passive: false });
+        }
+        
+        // Keyboard zoom (Cmd/Ctrl + Plus/Minus)
+        document.addEventListener('keydown', (e) => {
+            if (!container) return;
+            
+            if ((e.metaKey || e.ctrlKey) && !e.shiftKey) {
+                if (e.key === '=' || e.key === '+') {
+                    e.preventDefault();
+                    scale = Math.min(maxScale, scale + scaleStep);
+                    container.style.transform = `scale(${scale})`;
+                } else if (e.key === '-' || e.key === '_') {
+                    e.preventDefault();
+                    scale = Math.max(minScale, scale - scaleStep);
+                    container.style.transform = `scale(${scale})`;
+                } else if (e.key === '0') {
+                    e.preventDefault();
+                    scale = 1;
+                    container.style.transform = `scale(${scale})`;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+

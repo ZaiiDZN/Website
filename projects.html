@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects / Collections - zaivion hampden</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <main class="projects-page">
+        <div class="page-content">
+            <a href="index.html" class="home-link-left">home</a>
+            
+            <h1 class="page-title">projects / collections.</h1>
+            
+            <div class="projects-list">
+                <ol class="projects-ol" id="projects-list">
+                    <!-- Projects will be loaded dynamically from text file -->
+                </ol>
+            </div>
+        </div>
+    </main>
+
+    <!-- Under Construction Popup (commented out for future use) -->
+    <!--
+    <div class="construction-popup" id="construction-popup">
+        <div class="construction-popup-content">
+            <p>Under Construction!</p>
+        </div>
+    </div>
+    -->
+
+    <script src="script.js"></script>
+    <script>
+        // Project name to URL mapping
+        const projectUrls = {
+            'I Think Narcissus Fell In (Collection, 2025)': 'i-think-narcissus-fell-in.html',
+            'Architecture Portfolio (Fall 2025)': 'architecture-portfolio.html',
+            'Archive Project (2023)': 'archive-project.html'
+        };
+
+        // Load projects from text file
+        async function loadProjects() {
+            const projectsList = document.getElementById('projects-list');
+            if (!projectsList) return;
+
+            try {
+                const response = await fetch('images/projects-list.txt');
+                if (!response.ok) {
+                    console.error('Failed to load projects list');
+                    return;
+                }
+
+                const text = await response.text();
+                const lines = text.split('\n').map(line => line.trim()).filter(line => line);
+
+                projectsList.innerHTML = '';
+
+                lines.forEach((projectName, index) => {
+                    const li = document.createElement('li');
+                    const url = projectUrls[projectName];
+                    const isItalic = projectName === 'I Think Narcissus Fell In (Collection, 2025)';
+
+                    if (!url) {
+                        console.warn('No URL mapping found for project:', projectName);
+                        // Still display the project name even if no URL is found
+                        li.textContent = projectName;
+                        if (isItalic) {
+                            const italic = document.createElement('i');
+                            italic.textContent = projectName;
+                            li.innerHTML = '';
+                            li.appendChild(italic);
+                        }
+                    } else {
+                        // Regular project link
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.className = 'project-link';
+                        link.textContent = projectName;
+                        if (isItalic) {
+                            const italic = document.createElement('i');
+                            italic.appendChild(link);
+                            li.appendChild(italic);
+                        } else {
+                            li.appendChild(link);
+                        }
+                    }
+
+                    projectsList.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Error loading projects:', error);
+            }
+        }
+
+        // Show construction popup (commented out for future use)
+        /*
+        function showConstructionPopup() {
+            const popup = document.getElementById('construction-popup');
+            const content = popup?.querySelector('.construction-popup-content');
+            if (popup && content) {
+                // Reset animation
+                content.style.animation = 'none';
+                // Force reflow
+                void content.offsetWidth;
+                // Add active class and animation
+                popup.classList.add('active');
+                content.style.animation = 'constructionPopupShow 0.3s ease forwards, constructionPopupHide 0.5s ease 0.5s forwards';
+                
+                // Remove active class after animation completes
+                setTimeout(() => {
+                    popup.classList.remove('active');
+                    content.style.animation = 'none';
+                }, 1000); // 0.5s visible + 0.5s fade = 1s total
+            }
+        }
+        */
+
+        // Load projects on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load projects
+            loadProjects();
+        });
+    </script>
+</body>
+</html>

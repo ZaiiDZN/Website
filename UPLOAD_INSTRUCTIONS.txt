@@ -1,0 +1,274 @@
+PORTFOLIO SITE - UPLOAD INSTRUCTIONS
+=====================================
+
+Last Updated: Current System
+
+FOLDER STRUCTURE
+================
+
+All images and media files go in the images/ folder with this structure:
+
+images/
+├── home/                    # Home page circular gallery
+│   ├── 1.jpg               # Main images (1-15)
+│   ├── 2.jpg
+│   └── ...
+├── notable-work/            # Notable Work gallery
+│   ├── 1/                   # Piece 1 folder (OLDEST - appears bottom-right)
+│   │   ├── 1.jpg           # Main image (shows in gallery)
+│   │   ├── 2.jpg           # Secondary angle/extras (shows in overlay)
+│   │   ├── 3.jpg           # Secondary angle/extras
+│   │   ├── piece-data.txt  # Text data (title, size, medium, year, description)
+│   │   └── ...             # More angles as needed
+│   ├── 2/                   # Piece 2 folder (same structure)
+│   ├── ...                  # Pieces 3-14
+│   └── 15/                  # Piece 15 folder (NEWEST - appears top-left)
+│       ├── 1.jpg
+│       ├── 2.jpg
+│       └── piece-data.txt
+├── archive-project/         # Archive Project page
+│   ├── 1/                   # Piece 1: "Reminder of the Past"
+│   │   ├── 1.jpg           # Main image
+│   │   ├── 2.jpg           # Secondary angle
+│   │   └── ...
+│   └── ...                  # Pieces 2-4
+└── i-think-narcissus-fell-in/  # ITNFI project
+    ├── 1/                   # Piece 1: "Me"
+    │   ├── 1.jpg           # Image 1 (shows in green box, left position)
+    │   ├── 2.jpg           # Image 2 (shows in green box, middle position)
+    │   ├── 3.jpg           # Image 3 (shows in green box, right position)
+    │   ├── audio.mp3       # Audio file (shows as player in orange box)
+    │   ├── design-1.jpg     # Design image (shows as thumbnail in orange box)
+    │   ├── design-2.jpg    # Design image
+    │   ├── video.mp4       # Video file (shows as thumbnail with play button)
+    │   └── piece-data.txt  # Text data (title, size, medium, year, description)
+    ├── 2/                   # Piece 2: "Name Your Price"
+    │   ├── 1.jpg           # Main image (shows in green box)
+    │   ├── 2.jpg           # Secondary angle (available for overlay)
+    │   ├── 3.jpg           # Secondary angle (available for overlay)
+    │   ├── piece-data.txt  # Text data (title, size, medium, year, description)
+    │   └── ...             # Same structure as piece 1
+    └── ...                  # Pieces 3-6 (same structure as piece 2)
+
+IMPORTANT: Each piece gets its own numbered folder (1/, 2/, etc.)
+All files for that piece go directly in that folder - NO subfolders needed.
+
+
+HOW TO UPLOAD
+=============
+
+HOME PAGE
+---------
+1. Put images in: images/home/
+2. Name them: 1.jpg, 2.jpg, 3.jpg, ... up to 15.jpg
+3. Images are randomly arranged on each page load
+4. Refresh browser to see them
+
+NOTABLE WORK (REVERSED NUMBERING)
+----------------------------------
+IMPORTANT: Numbering is reversed! Newest pieces appear at top-left, oldest at bottom-right.
+
+1. Upload in chronological order (oldest first):
+   - First piece → images/notable-work/1/ (appears bottom-right)
+   - Second piece → images/notable-work/2/
+   - Third piece → images/notable-work/3/
+   - ... and so on
+
+2. For each piece folder:
+   - Put main image as: 1.jpg
+   - Put secondary angles/extras as: 2.jpg, 3.jpg, etc.
+   - Put text data as: piece-data.txt (see TEXT UPLOAD section below)
+
+3. When you upload piece 16:
+   - Create: images/notable-work/16/
+   - It will appear at top-left
+   - All other pieces shift down
+   - Bottom row will have piece 1 (oldest)
+
+4. Grid fills top row first (3 images per row)
+   - Top row always has 3 images (if 3+ pieces exist)
+   - Bottom row may have 1-3 images
+
+5. Refresh browser - images appear automatically
+6. Click any image to see overlay with details
+
+PROJECT PAGES (Archive, ITNFI, etc.)
+-------------------------------------
+1. Create folder: images/project-name/1/ (for piece 1)
+2. Put main image as: images/project-name/1/1.jpg
+3. Put secondary angles/extras as: 2.jpg, 3.jpg, etc.
+
+ITNFI PROJECT - SPECIAL INSTRUCTIONS:
+-------------------------------------
+For Piece 1 ("Me"):
+- 1.jpg, 2.jpg, 3.jpg all appear in a row in the green box
+- Click any image to view enlarged version in overlay
+- All three images are always visible on the page
+
+For Pieces 2-6:
+- 1.jpg appears in the green box (main image)
+- 2.jpg, 3.jpg are available but not automatically displayed
+- Click the main image (1.jpg) to view enlarged version in overlay
+
+For ALL ITNFI pieces:
+- audio.mp3 (or .wav, .m4a) - shows as audio player in orange box
+- design-1.jpg, design-2.jpg, etc. - shows as thumbnails in orange box
+- video.mp4 (or .mov, .webm) - shows as thumbnail with play button
+- piece-data.txt - text data (title, size, medium, year, description)
+- All mixed media appears in the orange box below the green image box
+
+5. Refresh browser - everything loads automatically
+
+
+TEXT UPLOAD (NOTABLE WORK & ITNFI)
+===================================
+
+For Notable Work and ITNFI project pieces, you can upload text data in a single file:
+
+1. Create file: images/notable-work/1/piece-data.txt (for Notable Work)
+   OR: images/i-think-narcissus-fell-in/1/piece-data.txt (for ITNFI)
+
+2. Format the file like this:
+
+title: Piece Name
+size: 5.5 x 5.5 x 6.5
+medium: Raku-fire Stoneware
+year: 2023
+description: Details about the piece.
+
+3. Rules:
+   - Each field on its own line
+   - Format: "fieldname: value"
+   - If a field is missing, it won't show in the overlay/page
+   - Title is required (shows as "Piece Name" if missing)
+   - Size, medium, year, description are optional
+   - Description can be multiple lines (everything after "description:")
+   - Leave size empty if you don't have size information
+
+4. Examples:
+
+   Full data:
+   title: Reminder of the Past
+   size: 5.5 x 5.5 x 6.5
+   medium: Raku-fire Stoneware
+   year: 2023
+   description: Scars are evidence that wounds can heal.
+
+   Minimal data (only title and description):
+   title: My Piece
+   description: This is a piece about memory.
+
+   No size/medium/year - those fields won't appear in overlay/page
+
+5. The system automatically:
+   - Loads the text file when you click a piece (Notable Work)
+   - Loads the text file on page load (ITNFI project)
+   - Hides empty fields (no placeholders for missing data)
+   - Shows only the fields you provide
+
+6. ITNFI Project Notes:
+   - Text files are stored in each piece folder (1/, 2/, 3/, etc.)
+   - Same format as Notable Work piece-data.txt files
+   - Currently used for reference/documentation
+
+
+FILE NAMING
+-----------
+- Main images: Always name as 1.jpg
+- Secondary angles/extras: 2.jpg, 3.jpg, 4.jpg, etc.
+- Audio: audio.mp3 (or audio.wav, audio.m4a)
+- Design images: design-1.jpg, design-2.jpg, etc.
+- Video: video.mp4 (or video.mov, video.webm)
+- Text data: piece-data.txt (Notable Work and ITNFI project)
+
+SUPPORTED FORMATS
+-----------------
+Images: .jpg, .jpeg, .png, .webp, .gif
+Audio: .mp3, .wav, .m4a
+Video: .mp4, .mov, .webm
+Text: .txt
+
+DISPLAY BEHAVIOR
+================
+
+HOME PAGE
+---------
+- Images arranged in circular gallery
+- Randomly positioned on each page load
+- Blurred/hazy behind overlay
+
+NOTABLE WORK
+------------
+- Main images (1.jpg) show in 3-column gallery
+- NEWEST pieces at top-left, OLDEST at bottom-right
+- Grid fills top row first (always 3 images if 3+ pieces)
+- Click image → overlay opens with:
+  * Enlarged main image
+  * Secondary angles/extras (scrollable, no title)
+  * Title (always shown)
+  * Size (only if provided in piece-data.txt)
+  * Medium (only if provided)
+  * Year (only if provided)
+  * Description (only if provided)
+  * Missing fields are automatically hidden
+
+PROJECT PAGES
+-------------
+- Main image shows on page in green box
+- Click any image → zoom overlay opens with enlarged version
+- Overlay has hazy/darkened background
+- Click anywhere on overlay or press Escape to close
+
+ITNFI PROJECT - DISPLAY:
+------------------------
+Piece 1 ("Me"):
+- Images 1.jpg, 2.jpg, 3.jpg appear in a horizontal row in green box
+- All three images visible at once
+- Hover over any image → slight scale-up effect
+- Click any image → zoom overlay with enlarged version
+
+Pieces 2-6:
+- Main image (1.jpg) appears in green box
+- Hover over image → slight scale-up effect
+- Click image → zoom overlay with enlarged version
+
+Mixed media (ALL pieces):
+- Appears in orange box below green box
+- Design/video thumbnails (80x80px) - click to enlarge
+- Audio player (80px height) - plays inline
+- All aligned in same horizontal row
+
+
+AUTOMATIC SYSTEM
+================
+
+The system automatically:
+- Detects new images in folders
+- Loads images when you refresh
+- Loads text data from piece-data.txt files (Notable Work and ITNFI)
+- Hides empty fields in overlays
+- Reverses numbering for Notable Work (newest at top)
+
+Future enhancements will include:
+- Auto-creating gallery items for new pieces
+- Auto-generating HTML structure
+- More metadata options
+
+
+TIPS
+====
+- Keep file sizes under 2MB for faster loading
+- Use .jpg for images (best compatibility)
+- Square images work best for design thumbnails
+- Audio/video files should be reasonably sized
+- The system maintains aspect ratios automatically
+- Missing files show placeholders (no errors)
+- For Notable Work: Upload in chronological order (1 = oldest, 15 = newest)
+- Text fields are optional - only include what you have
+- ITNFI piece descriptions are stored in piece-data.txt files in each piece folder
+
+
+QUESTIONS?
+==========
+The system is designed to be zero-configuration - just drop files in
+the right folders with the right names and refresh your browser!

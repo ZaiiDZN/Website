@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture 0150 - Intermediate Design Studio - zaivion hampden</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Architecture Pitch Deck Styles */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: #ffffff;
+            color: #1a1a1a;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation - matches site style */
+        .arch-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .arch-nav a {
+            color: rgba(0, 0, 0, 0.71);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 300;
+            letter-spacing: -0.02em;
+            text-transform: lowercase;
+            transition: color 0.3s ease;
+        }
+
+        .arch-nav a:hover {
+            color: var(--primary-color);
+        }
+
+        .arch-nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .arch-nav-links span {
+            color: rgba(0, 0, 0, 0.3);
+        }
+
+        /* Slide Sections */
+        .arch-slide {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8rem 4rem 4rem;
+            position: relative;
+        }
+
+        .arch-slide-content {
+            max-width: 1400px;
+            width: 100%;
+        }
+
+        /* Hero Slide */
+        .arch-hero {
+            background: #ffffff;
+            text-align: center;
+        }
+
+        .arch-hero h1 {
+            font-size: 8rem;
+            font-weight: 300;
+            letter-spacing: -0.03em;
+            line-height: 0.95;
+            margin-bottom: 2rem;
+            color: #1a1a1a;
+        }
+
+        .arch-hero-subtitle {
+            font-size: 1.5rem;
+            font-weight: 300;
+            color: #666;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 4rem;
+        }
+
+        .arch-hero-meta {
+            font-size: 1rem;
+            color: #999;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        /* Image Slide */
+        .arch-image-slide {
+            background: #f5f5f5;
+            padding: 0;
+        }
+
+        .arch-image-slide img {
+            width: 100%;
+            height: 100vh;
+            object-fit: cover;
+            display: block;
+        }
+
+        .arch-image-placeholder {
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #e8e8e8 0%, #d0d0d0 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 1.2rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        /* Content Slide */
+        .arch-content-slide {
+            background: #ffffff;
+        }
+
+        .arch-content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6rem;
+            align-items: center;
+        }
+
+        .arch-content-text h2 {
+            font-size: 4rem;
+            font-weight: 300;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            color: #1a1a1a;
+        }
+
+        .arch-content-text p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #444;
+            margin-bottom: 1.5rem;
+        }
+
+        .arch-content-image {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+
+        .arch-content-image-placeholder {
+            width: 100%;
+            height: 500px;
+            background: linear-gradient(135deg, #e8e8e8 0%, #d0d0d0 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        /* Process Slide */
+        .arch-process-slide {
+            background: #fafafa;
+        }
+
+        .arch-process-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 3rem;
+        }
+
+        .arch-process-item {
+            text-align: center;
+        }
+
+        .arch-process-number {
+            font-size: 4rem;
+            font-weight: 300;
+            color: #999;
+            margin-bottom: 1rem;
+        }
+
+        .arch-process-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .arch-process-description {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #666;
+        }
+
+        /* Footer Slide */
+        .arch-footer-slide {
+            background: #1a1a1a;
+            color: #ffffff;
+            text-align: center;
+        }
+
+        .arch-footer-slide h2 {
+            font-size: 3rem;
+            font-weight: 300;
+            letter-spacing: -0.02em;
+            margin-bottom: 2rem;
+        }
+
+        .arch-footer-slide p {
+            font-size: 1.1rem;
+            color: #999;
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .arch-hero h1 {
+                font-size: 5rem;
+            }
+
+            .arch-content-grid {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .arch-process-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .arch-nav {
+                padding: 1rem 2rem;
+            }
+
+            .arch-nav-links {
+                display: none;
+            }
+
+            .arch-slide {
+                padding: 6rem 2rem 2rem;
+            }
+
+            .arch-hero h1 {
+                font-size: 3rem;
+            }
+
+            .arch-content-text h2 {
+                font-size: 2.5rem;
+            }
+
+            .arch-process-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Smooth Scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="arch-nav">
+        <a href="index.html">home</a>
+        <div class="arch-nav-links">
+            <a href="#slide-1">project</a>
+            <span>|</span>
+            <a href="#slide-2">concept</a>
+            <span>|</span>
+            <a href="#slide-3">design</a>
+        </div>
+    </nav>
+
+    <!-- Slide 1: Hero -->
+    <section class="arch-slide arch-hero" id="slide-1">
+        <div class="arch-slide-content">
+            <h1>PROJECT TITLE</h1>
+            <div class="arch-hero-subtitle">Architecture 0150 - Intermediate Design Studio</div>
+            <div class="arch-hero-meta">Spring 2025</div>
+        </div>
+    </section>
+
+    <!-- Slide 2: Full Image -->
+    <section class="arch-slide arch-image-slide" id="slide-2">
+        <div class="arch-image-placeholder">
+            [Main Project Image]
+        </div>
+    </section>
+
+    <!-- Slide 3: Concept -->
+    <section class="arch-slide arch-content-slide" id="slide-3">
+        <div class="arch-slide-content">
+            <div class="arch-content-grid">
+                <div class="arch-content-text">
+                    <h2>Concept</h2>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
+                    <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                </div>
+                <div class="arch-content-image-placeholder">
+                    [Concept Image]
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 4: Full Image -->
+    <section class="arch-slide arch-image-slide" id="slide-4">
+        <div class="arch-image-placeholder">
+            [Design Development Image]
+        </div>
+    </section>
+
+    <!-- Slide 5: Design Process -->
+    <section class="arch-slide arch-process-slide" id="slide-5">
+        <div class="arch-slide-content">
+            <h2 style="font-size: 3rem; font-weight: 300; text-align: center; margin-bottom: 4rem; letter-spacing: -0.02em;">Design Process</h2>
+            <div class="arch-process-grid">
+                <div class="arch-process-item">
+                    <div class="arch-process-number">01</div>
+                    <div class="arch-process-title">Research</div>
+                    <div class="arch-process-description">Site analysis and context study</div>
+                </div>
+                <div class="arch-process-item">
+                    <div class="arch-process-number">02</div>
+                    <div class="arch-process-title">Concept</div>
+                    <div class="arch-process-description">Initial design exploration</div>
+                </div>
+                <div class="arch-process-item">
+                    <div class="arch-process-number">03</div>
+                    <div class="arch-process-title">Development</div>
+                    <div class="arch-process-description">Refinement and iteration</div>
+                </div>
+                <div class="arch-process-item">
+                    <div class="arch-process-number">04</div>
+                    <div class="arch-process-title">Resolution</div>
+                    <div class="arch-process-description">Final design proposal</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 6: Content with Image -->
+    <section class="arch-slide arch-content-slide" id="slide-6">
+        <div class="arch-slide-content">
+            <div class="arch-content-grid">
+                <div class="arch-content-image-placeholder">
+                    [Technical Drawing]
+                </div>
+                <div class="arch-content-text">
+                    <h2>Technical Details</h2>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                    <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 7: Full Image -->
+    <section class="arch-slide arch-image-slide" id="slide-7">
+        <div class="arch-image-placeholder">
+            [Final Design Image]
+        </div>
+    </section>
+
+    <!-- Slide 8: Footer -->
+    <section class="arch-slide arch-footer-slide" id="slide-8">
+        <div class="arch-slide-content">
+            <h2>Thank You</h2>
+            <p>Architecture 0150 - Intermediate Design Studio</p>
+            <p>Spring 2025</p>
+        </div>
+    </section>
+
+    <script>
+        // Smooth scroll for navigation links
+        document.querySelectorAll('.arch-nav a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add scroll effect to navigation
+        let lastScroll = 0;
+        const nav = document.querySelector('.arch-nav');
+        
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll > 100) {
+                nav.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.05)';
+            } else {
+                nav.style.boxShadow = 'none';
+            }
+            
+            lastScroll = currentScroll;
+        });
+    </script>
+</body>
+</html>
+
+
+

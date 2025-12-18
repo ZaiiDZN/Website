@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notable Work - zaivion hampden</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Notable Work Page -->
+    <main class="notable-work-page" id="notable-work-page">
+        <div class="page-content">
+            <!-- Header with Home and Click Instruction -->
+            <div class="notable-work-header">
+                <div class="header-item">
+                    <a href="index.html" class="home-link-header">home</a>
+                </div>
+                <div class="header-item">
+                    <span class="click-instruction-text">click on any pic to see more</span>
+                </div>
+            </div>
+            
+            <h1 class="page-title">notable work.</h1>
+            
+            <div class="gallery" id="notable-work-gallery">
+                <!-- Gallery items will be dynamically generated based on available folders -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Notable Work Image Overlay -->
+    <div class="notable-image-overlay" id="notable-image-overlay">
+        <div class="notable-image-overlay-backdrop" id="notable-image-overlay-backdrop"></div>
+        <div class="notable-image-overlay-content">
+            <div class="notable-image-overlay-image" id="notable-image-overlay-image">
+                <div class="notable-image-overlay-placeholder">
+                    <span>Enlarged Image</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Piece Detail Modal Overlay -->
+    <div class="piece-modal" id="piece-modal">
+        <div class="modal-backdrop" id="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-columns">
+                <div class="modal-image-column">
+                    <div class="modal-main-image" id="modal-main-image">
+                        <div class="modal-image-placeholder">
+                            <span>Main Image</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-info-column">
+                    <h2 class="modal-title"><i id="modal-title-text">Piece Name</i></h2>
+                    <div class="modal-details">
+                        <p id="modal-size">size</p>
+                        <p id="modal-medium">medium</p>
+                        <p id="modal-year">year</p>
+                    </div>
+                    <p class="modal-description" id="modal-description"><i>Details about.</i></p>
+                    <div class="modal-supplement-gallery" id="modal-supplement-images">
+                        <!-- Supplement images will be added here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
