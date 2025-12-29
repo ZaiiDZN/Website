@@ -1,5 +1,5 @@
 title: Name Your Price
-size: 
+size: 5" x 4" x 9"
 medium: Speckled Stoneware
 year: 2025
 description: How much does your happiness cost?
@@ -11,6 +11,10 @@ Shed the wings of obligation,
 for a single dose of freedom.
 Memory doesn't serve you well.
 How much does your happiness cost?
+
+
+
+
 
 
 

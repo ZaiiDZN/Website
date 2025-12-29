@@ -1074,7 +1074,7 @@ body.overlay-active {
 /* Tighter spacing between pieces on the Narcissus project page
    so the gap between mixed media and the next piece matches piece 1 */
 .narcissus-project-page .project-piece + .project-piece {
-    margin-top: 1rem;
+    margin-top: 1.5rem;
 }
 
 /* Archive Project - Papyrus background */
@@ -1564,14 +1564,12 @@ body.overlay-active {
     position: relative;
     display: grid;
     grid-template-columns: minmax(0, 700px) minmax(0, 1fr);
-    /* Make rows size to content so spacing between main images and mixed media is minimal */
-    grid-template-rows: auto auto;
     column-gap: 1.5rem;
-    /* Super minimal vertical gap between image row and mixed media row */
-    row-gap: 0.15rem;
-    align-items: stretch;
+    row-gap: 0;
+    align-items: start;
     border: 2px solid transparent;
-    padding: 1.2rem;
+    padding: 0.5rem;
+    padding-bottom: 0.5rem;
     max-width: 2300px;
     margin: 0 auto;
     background: transparent !important; /* Override white background */
@@ -1599,23 +1597,33 @@ body.overlay-active {
     justify-self: start;
     align-items: center;
     padding: 0;
+    margin: 0;
+    margin-bottom: 0;
+    display: grid;
+    grid-template-rows: auto;
+    row-gap: 0;
+    align-items: start;
+    position: relative;
 }
 
 .narcissus-project-page .piece-image-placeholder {
+    grid-row: 1;
     width: 100%;
     /* Fix a consistent visual height for all ITNFI image rows so
        no single piece feels taller or shorter than the others */
     height: 360px;
-    padding: 0.5rem;
-    display: inline-flex;
+    padding: 0;
+    display: flex;
     align-items: center;
     justify-content: center;
+    margin: 0;
     margin-bottom: 0;
     overflow: visible;
     background: transparent;
     border: 2px solid transparent;
     border-radius: 6px;
     position: relative;
+    z-index: 1;
 }
 
 .narcissus-project-page .piece-image-placeholder img {
@@ -1630,7 +1638,12 @@ body.overlay-active {
     position: relative;
     z-index: 1;
     cursor: pointer;
-    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    opacity: 0;
+}
+
+.narcissus-project-page .piece-image-placeholder img.loaded {
+    opacity: 1;
 }
 
 .narcissus-project-page .piece-image-placeholder img:hover {
@@ -1641,7 +1654,7 @@ body.overlay-active {
     display: flex;
     gap: 0.3rem;
     justify-content: center;
-    align-items: flex-start;
+    align-items: center;
 }
 
 .narcissus-project-page .piece-image-placeholder.multi-image-row img {
@@ -1651,7 +1664,12 @@ body.overlay-active {
     max-height: 300px;
     object-fit: contain;
     cursor: pointer;
-    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    opacity: 0;
+}
+
+.narcissus-project-page .piece-image-placeholder.multi-image-row img.loaded {
+    opacity: 1;
 }
 
 .narcissus-project-page .piece-image-placeholder.multi-image-row img:hover {
@@ -1663,34 +1681,32 @@ body.overlay-active {
 }
 
 .narcissus-project-page .piece-media-row {
-    grid-column: 1;
-    grid-row: 2;
-    width: 100%;
-    max-width: 700px;
-    justify-self: start;
     border: 2px solid transparent;
-    padding: 0.4rem 0.5rem;
+    padding: 0;
     border-radius: 6px;
-    /* Minimal extra space under image row */
-    margin: 0.1rem 0 0 0;
+    margin: 0;
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    /* Let the row sit directly under the images */
-    align-self: start;
+    z-index: 0;
+    position: absolute;
+    top: calc(0.5rem + 360px);
+    left: 0.5rem;
+    width: calc(100% - 1rem);
+    max-width: 700px;
 }
 
 .narcissus-project-page .piece-info-column {
     grid-column: 2;
-    grid-row: 1 / span 2;
     border: 2px solid transparent;
-    padding: 0.6rem 0.8rem;
+    padding: 0.6rem 0.8rem 0.6rem 0.8rem;
     border-radius: 6px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    max-height: 720px;
-    overflow: auto;
+    height: fit-content;
+    width: 100%;
+    align-self: start;
 }
 
 .narcissus-project-page .piece-title {
@@ -1794,6 +1810,7 @@ body.overlay-active {
     width: 280px;
     max-width: 100%;
     height: 40px;
+    display: none; /* Hide native controls until JavaScript replaces with custom play button */
 }
 
 /* Overlay grid */

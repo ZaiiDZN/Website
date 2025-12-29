@@ -431,6 +431,20 @@
         const pieceMediaItems = {};
         const pieceMainImages = {};
         let currentCarousel = { items: [], currentIndex: 0, type: null };
+        
+        // Track currently playing audio to ensure only one plays at a time
+        let currentlyPlayingAudio = null;
+        
+        // Function to stop any currently playing audio
+        function stopCurrentlyPlayingAudio() {
+            if (currentlyPlayingAudio && !currentlyPlayingAudio.paused) {
+                currentlyPlayingAudio.pause();
+                currentlyPlayingAudio.currentTime = 0;
+                // Remove playing class from associated button if it exists
+                const playingButtons = document.querySelectorAll('.media-play-button.playing');
+                playingButtons.forEach(btn => btn.classList.remove('playing'));
+            }
+        }
 
         // Carousel functions
         function openMediaCarousel(items, startIndex, type) {
@@ -517,15 +531,25 @@
                 if (audio && playBtn) {
                     playBtn.onclick = () => {
                         if (audio.paused) {
+                            // Stop any currently playing audio
+                            stopCurrentlyPlayingAudio();
+                            // Set this as the currently playing audio
+                            currentlyPlayingAudio = audio;
                             audio.play();
                             playBtn.classList.add('playing');
                         } else {
                             audio.pause();
                             playBtn.classList.remove('playing');
+                            if (currentlyPlayingAudio === audio) {
+                                currentlyPlayingAudio = null;
+                            }
                         }
                     };
                     audio.onended = () => {
                         playBtn.classList.remove('playing');
+                        if (currentlyPlayingAudio === audio) {
+                            currentlyPlayingAudio = null;
+                        }
                     };
                 }
             }
@@ -617,7 +641,12 @@
             // Stop any playing media
             const audio = thumbnailOverlay.querySelector('audio');
             const video = thumbnailOverlay.querySelector('video');
-            if (audio) audio.pause();
+            if (audio) {
+                audio.pause();
+                if (currentlyPlayingAudio === audio) {
+                    currentlyPlayingAudio = null;
+                }
+            }
             if (video) video.pause();
         }
         
@@ -782,15 +811,25 @@
                                 `;
                                 playButton.onclick = () => {
                                     if (playbackAudio.paused) {
+                                        // Stop any currently playing audio
+                                        stopCurrentlyPlayingAudio();
+                                        // Set this as the currently playing audio
+                                        currentlyPlayingAudio = playbackAudio;
                                         playbackAudio.play();
                                         playButton.classList.add('playing');
                                     } else {
                                         playbackAudio.pause();
                                         playButton.classList.remove('playing');
+                                        if (currentlyPlayingAudio === playbackAudio) {
+                                            currentlyPlayingAudio = null;
+                                        }
                                     }
                                 };
                                 playbackAudio.onended = () => {
                                     playButton.classList.remove('playing');
+                                    if (currentlyPlayingAudio === playbackAudio) {
+                                        currentlyPlayingAudio = null;
+                                    }
                                 };
                                 
                                 audioElement.style.display = 'none';
@@ -861,7 +900,15 @@
                 });
                 
                 if (descriptionLines.length > 0) {
-                    // Join with newlines, preserving empty lines
+                    // Remove all trailing empty lines
+                    while (descriptionLines.length > 0 && descriptionLines[descriptionLines.length - 1].trim() === '') {
+                        descriptionLines.pop();
+                    }
+                    // Always add exactly one empty line at the end
+                    if (descriptionLines.length > 0) {
+                        descriptionLines.push('');
+                    }
+                    // Join with newlines, preserving empty lines within the text
                     data.description = descriptionLines.join('\n');
                 }
                 
@@ -937,7 +984,9 @@
                     const subtitleText = await subtitleResponse.text();
                     const subtitleElement = document.getElementById('narcissus-subtitle');
                     if (subtitleElement && subtitleText.trim()) {
-                        subtitleElement.innerHTML = `<i>${subtitleText.trim()}</i>`;
+                        // Convert line breaks to <br> tags
+                        const formattedSubtitle = subtitleText.trim().replace(/\n/g, '<br>');
+                        subtitleElement.innerHTML = `<i>${formattedSubtitle}</i>`;
                     }
                 }
             } catch (error) {
@@ -1485,6 +1534,14 @@
             if (overlay) {
                 overlay.classList.remove('active');
                 document.body.style.overflow = '';
+                // Stop any playing audio
+                const audio = overlay.querySelector('audio');
+                if (audio) {
+                    audio.pause();
+                    if (currentlyPlayingAudio === audio) {
+                        currentlyPlayingAudio = null;
+                    }
+                }
             }
         }
 
@@ -1522,12 +1579,130 @@
                 loadExtrasSubtitle();
                 loadExtrasClosingText();
                 loadExtrasMedia();
+                adjustOrangeBoxHeights();
+                hideImagesUntilLoaded();
             });
         } else {
             loadExtrasTitle();
             loadExtrasSubtitle();
             loadExtrasClosingText();
             loadExtrasMedia();
+            adjustOrangeBoxHeights();
+            hideImagesUntilLoaded();
+        }
+
+        // Hide images until they're loaded to prevent alt text from showing
+        function hideImagesUntilLoaded() {
+            const images = document.querySelectorAll('.narcissus-project-page .piece-image-placeholder img');
+            images.forEach(img => {
+                if (img.complete && img.naturalHeight > 0) {
+                    // Image already loaded
+                    img.classList.add('loaded');
+                } else {
+                    // Wait for image to load
+                    img.addEventListener('load', function() {
+                        this.classList.add('loaded');
+                    });
+                    img.addEventListener('error', function() {
+                        // Even on error, show it (so alt text appears if needed)
+                        this.classList.add('loaded');
+                    });
+                }
+            });
+        }
+
+        // Function to adjust orange box heights to end right after blue boxes
+        function adjustOrangeBoxHeights() {
+            // Wait for images and media to load
+            const images = document.querySelectorAll('.narcissus-project-page .piece-image-placeholder img');
+            const mediaThumbnails = document.querySelectorAll('.narcissus-project-page .piece-media-row img, .narcissus-project-page .piece-media-row video');
+            let imagesLoaded = 0;
+            const totalImages = images.length + mediaThumbnails.length;
+
+            if (totalImages === 0) {
+                calculateHeights();
+                return;
+            }
+
+            const checkLoaded = () => {
+                imagesLoaded++;
+                if (imagesLoaded === totalImages) {
+                    // Small delay to ensure layout is complete
+                    setTimeout(calculateHeights, 100);
+                }
+            };
+
+            images.forEach(img => {
+                if (img.complete) {
+                    checkLoaded();
+                } else {
+                    img.addEventListener('load', checkLoaded);
+                    img.addEventListener('error', checkLoaded);
+                }
+            });
+
+            mediaThumbnails.forEach(media => {
+                if (media.tagName === 'VIDEO') {
+                    if (media.readyState >= 2) {
+                        checkLoaded();
+                    } else {
+                        media.addEventListener('loadeddata', checkLoaded);
+                        media.addEventListener('error', checkLoaded);
+                    }
+                } else {
+                    if (media.complete) {
+                        checkLoaded();
+                    } else {
+                        media.addEventListener('load', checkLoaded);
+                        media.addEventListener('error', checkLoaded);
+                    }
+                }
+            });
+        }
+
+        function calculateHeights() {
+            const pieces = document.querySelectorAll('.narcissus-project-page .project-piece');
+            
+            pieces.forEach(piece => {
+                const blueBox = piece.querySelector('.piece-media-row');
+                const greenBox = piece.querySelector('.piece-info-column');
+                
+                if (blueBox) {
+                    // Get positions relative to the orange box
+                    const pieceRect = piece.getBoundingClientRect();
+                    const blueBoxRect = blueBox.getBoundingClientRect();
+                    
+                    // Calculate the bottom of the blue box relative to the top of the orange box
+                    const blueBoxBottom = blueBoxRect.bottom - pieceRect.top;
+                    
+                    // Get the green box bottom if it exists
+                    let greenBoxBottom = 0;
+                    if (greenBox) {
+                        const greenBoxRect = greenBox.getBoundingClientRect();
+                        greenBoxBottom = greenBoxRect.bottom - pieceRect.top;
+                    }
+                    
+                    // The orange box should end at the maximum of blue box bottom or green box bottom
+                    const maxBottom = Math.max(blueBoxBottom, greenBoxBottom);
+                    
+                    // Get current padding-top
+                    const computedStyle = getComputedStyle(piece);
+                    const paddingTop = parseFloat(computedStyle.paddingTop);
+                    
+                    // Calculate required padding-bottom
+                    // maxBottom is the distance from top of orange box to bottom of content
+                    // We want the orange box to extend to maxBottom + 0.5rem (bottom padding)
+                    // Current height = paddingTop + contentHeight + paddingBottom
+                    // We want: paddingTop + contentHeight + newPaddingBottom = maxBottom + 0.5rem
+                    // So: newPaddingBottom = maxBottom + 0.5rem - paddingTop - contentHeight
+                    
+                    // But we need to know the content height. Let's use a different approach:
+                    // Set min-height to maxBottom + 0.5rem, keeping padding-bottom at 0.5rem
+                    const remToPx = parseFloat(getComputedStyle(document.documentElement).fontSize);
+                    piece.style.minHeight = `${maxBottom / remToPx + 0.5}rem`;
+                    piece.style.paddingBottom = '0.5rem';
+                }
+            });
         }
     </script>
 </body>
