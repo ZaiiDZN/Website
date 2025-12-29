@@ -1281,7 +1281,13 @@
                     const text = await response.text();
                     const closingElement = document.getElementById('extras-closing-text');
                     if (closingElement && text.trim()) {
-                        closingElement.innerHTML = `<i>${text.trim()}</i>`;
+                        // Replace "these artists" with a link to Spotify playlist
+                        const spotifyPlaylistUrl = 'https://open.spotify.com/playlist/3owPvRJYxpsvmS7sbTHMqL?si=a2997fdbe27c4f13';
+                        const formattedText = text.trim().replace(
+                            /these artists/gi,
+                            `<a href="${spotifyPlaylistUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">these artists</a>`
+                        );
+                        closingElement.innerHTML = `<i>${formattedText}</i>`;
                     }
                 }
             } catch (error) {
