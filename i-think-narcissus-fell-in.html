@@ -1283,15 +1283,21 @@
                     if (closingElement && text.trim()) {
                         // Replace "these artists" with a link to Spotify playlist
                         const spotifyPlaylistUrl = 'https://open.spotify.com/playlist/3owPvRJYxpsvmS7sbTHMqL?si=a2997fdbe27c4f13';
-                        const formattedText = text.trim().replace(
-                            /these artists/gi,
+                        let formattedText = text.trim();
+                        // Replace "these artists" (case-insensitive, handling any whitespace)
+                        formattedText = formattedText.replace(
+                            /these\s+artists/gi,
                             `<a href="${spotifyPlaylistUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: inherit;">these artists</a>`
                         );
                         closingElement.innerHTML = `<i>${formattedText}</i>`;
+                    } else {
+                        console.error('Closing element not found or text is empty');
                     }
+                } else {
+                    console.error('Failed to load closing.txt:', response.status);
                 }
             } catch (error) {
-                console.log('Extras closing text file not found, using default');
+                console.error('Error loading extras closing text:', error);
             }
         }
 
