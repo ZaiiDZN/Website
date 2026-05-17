@@ -1316,11 +1316,12 @@
             extrasItems = [];
             
             // Try to load files numbered 1, 2, 3, etc.
-            let fileNumber = 1;
             let foundFiles = 0;
             const maxFiles = 50; // Reasonable limit
+            const maxConsecutiveMisses = 10;
+            let consecutiveMisses = 0;
             
-            while (foundFiles < maxFiles) {
+            for (let fileNumber = 1; fileNumber <= maxFiles; fileNumber++) {
                 // Try common extensions
                 const extensions = [
                     ['jpg', 'jpeg', 'png', 'gif', 'webp'],
@@ -1346,6 +1347,7 @@
                                 });
                                 fileFound = true;
                                 foundFiles++;
+                                consecutiveMisses = 0;
                                 break;
                             }
                         } catch (e) {
@@ -1356,11 +1358,13 @@
                 }
                 
                 if (!fileFound) {
-                    // No more files found, stop
-                    break;
+                    consecutiveMisses++;
+                    // Numbered uploads can have occasional gaps; stop only after
+                    // enough misses that continuing would just waste probes.
+                    if (foundFiles > 0 && consecutiveMisses >= maxConsecutiveMisses) {
+                        break;
+                    }
                 }
-                
-                fileNumber++;
             }
             
             // Render extras carousel
