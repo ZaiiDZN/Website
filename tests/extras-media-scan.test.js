@@ -48,8 +48,9 @@ ${loaderSource}
     await vm.runInContext('loadExtrasMedia()', sandbox);
 
     assert.strictEqual(sandbox.__renderCalled, true, 'carousel render should be called');
+    const loadedNumbers = Array.from(sandbox.__extrasItems, (item) => item.number);
     assert.deepStrictEqual(
-        sandbox.__extrasItems.map((item) => item.number),
+        loadedNumbers,
         [1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12],
         'extras media scan should continue after a missing numbered file'
     );
