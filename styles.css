@@ -41,7 +41,8 @@ body.overlay-active {
     overflow-y: auto;
 }
 
-/* Circular Gallery (Behind home page) */
+/* Home background gallery (behind home page) */
+.home-background-gallery,
 .circular-gallery {
     position: absolute;
     top: 0;
@@ -227,7 +228,7 @@ body.overlay-active {
     font-size: 0.9rem;
     letter-spacing: 0.05em;
     margin-bottom: 0.5rem;
-    color: var(--primary-color);
+    color: var(--text-color);
 }
 
 .section-divider {
@@ -376,7 +377,7 @@ body.overlay-active {
     font-size: 3rem;
     text-align: center;
     margin-bottom: 1rem;
-    color: var(--primary-color);
+    color: var(--text-color);
 }
 
 .section-description {
@@ -412,7 +413,7 @@ body.overlay-active {
     font-weight: 300;
     text-align: center;
     margin-bottom: 3rem;
-    color: var(--primary-color);
+    color: var(--text-color);
     padding-top: 4rem;
     line-height: 0.9;
     letter-spacing: -0.02em;
@@ -806,7 +807,7 @@ body.overlay-active {
     font-family: var(--font-family);
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--primary-color);
+    color: var(--text-color);
     margin: 0;
     line-height: 1.2;
     margin-bottom: 0.75rem;
@@ -2496,9 +2497,19 @@ body:has(.piece-modal.active) .project-page {
 
 
 .projects-list {
-    max-width: 1200px;
-    margin: 0 auto;
     margin-top: 3rem;
+}
+
+.projects-list.two-column {
+    align-items: start;
+}
+
+.projects-column .section-label {
+    margin-bottom: 0.5rem;
+}
+
+.projects-column .section-divider {
+    margin-bottom: 1.5rem;
 }
 
 .projects-ol {
@@ -2526,7 +2537,35 @@ body:has(.piece-modal.active) .project-page {
     color: var(--primary-color);
 }
 
+button.project-link-button {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    text-align: left;
+}
+
 .projects-ol li i {
+    font-style: italic;
+}
+
+.projects-ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+    font-size: 1.2rem;
+    line-height: 1.8;
+    font-weight: 300;
+    color: #888;
+}
+
+.projects-ul li {
+    margin-bottom: 1.5rem;
+    color: #888;
+}
+
+.projects-ul li i {
     font-style: italic;
 }
 
@@ -2634,14 +2673,14 @@ body:has(.piece-modal.active) .project-page {
 .form-group input:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: var(--primary-color);
+    border-color: var(--text-color);
 }
 
 .submit-button {
     padding: 0.75rem 2rem;
     background: none;
-    border: 1px solid var(--primary-color);
-    color: var(--primary-color);
+    border: 1px solid var(--text-color);
+    color: var(--text-color);
     font-size: 0.9rem;
     font-weight: 300;
     text-transform: lowercase;
@@ -3226,7 +3265,7 @@ html {
         right: 0.5rem;
     }
     
-    /* Fix circular gallery on mobile - keep original opacity */
+    /* Home background gallery on mobile */
     .gallery-image-item {
         --width: 120px !important;
     }

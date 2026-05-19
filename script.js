@@ -637,60 +637,127 @@ if (showHomeOverlayBtn) {
 }
 
 // Image loading utilities
-const imageExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+const imageExtensions = ['jpeg', 'jpg', 'png', 'webp', 'gif'];
+const IMAGE_FETCH_POOL_SIZE = 8;
+const HOME_BACKGROUND_CACHE_KEY = 'zh-home-background-paths-v1';
+const NOTABLE_FOLDERS_CACHE_KEY = 'zh-notable-folders-v1';
 
-// Candidate image paths for the home page background gallery
-// These are generic patterns across the site; tryLoadImage will resolve .jpg/.jpeg/etc.
 let homeBackgroundCandidates = null;
+
+async function fetchTextManifest(url) {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) return null;
+
+        return (await response.text())
+            .split('\n')
+            .map((line) => line.trim())
+            .filter((line) => line && !line.startsWith('#'));
+    } catch {
+        return null;
+    }
+}
+
+function readSessionCache(key) {
+    try {
+        const raw = sessionStorage.getItem(key);
+        return raw ? JSON.parse(raw) : null;
+    } catch {
+        return null;
+    }
+}
+
+function writeSessionCache(key, value) {
+    try {
+        sessionStorage.setItem(key, JSON.stringify(value));
+    } catch {
+        // Ignore quota errors
+    }
+}
+
+async function runPool(items, poolSize, worker) {
+    const results = new Array(items.length);
+    let nextIndex = 0;
+
+    async function runWorker() {
+        while (nextIndex < items.length) {
+            const currentIndex = nextIndex++;
+            results[currentIndex] = await worker(items[currentIndex], currentIndex);
+        }
+    }
+
+    const workers = Array.from(
+        { length: Math.min(poolSize, items.length) },
+        () => runWorker()
+    );
+    await Promise.all(workers);
+    return results;
+}
+
+async function imageExists(path) {
+    try {
+        const response = await fetch(path, { method: 'HEAD' });
+        return response.ok;
+    } catch {
+        return false;
+    }
+}
 
 function buildHomeBackgroundPatterns() {
     const patterns = [];
-    
     const addRange = (patternFn, max) => {
         for (let i = 1; i <= max; i++) {
             patterns.push(patternFn(i));
         }
     };
-    
-    // Notable work main images (1.jpg → will also find 1.jpeg via tryLoadImage)
-    addRange((i) => `images/notable-work/${i}/1.jpg`, 40);
-    
-    // Archive project main images
-    addRange((i) => `images/archive-project/${i}/1.jpg`, 10);
-    
-    // ITNFI project main images
-    addRange((i) => `images/i-think-narcissus-fell-in/${i}/1.jpg`, 6);
-    
-    // Dedicated home images, if you want to upload specific background photos
-    addRange((i) => `images/home/${i}.jpg`, 30);
-    
+
+    addRange((i) => `images/notable-work/${i}/1.jpeg`, 20);
+    addRange((i) => `images/archive-project/${i}/1.jpeg`, 10);
+    addRange((i) => `images/i-think-narcissus-fell-in/${i}/1.jpeg`, 6);
+    addRange((i) => `images/home/${i}.jpeg`, 20);
+
     return Array.from(new Set(patterns));
 }
 
-// Detect which candidate images actually exist (once per session)
+async function probeHomeBackgroundPatterns(patterns) {
+    const found = await runPool(patterns, IMAGE_FETCH_POOL_SIZE, async (path) => {
+        if (await imageExists(path)) return path;
+        const basePath = path.replace(/\.(jpe?g|png|webp|gif)$/i, '');
+        for (const ext of imageExtensions) {
+            const candidate = `${basePath}.${ext}`;
+            if (candidate !== path && (await imageExists(candidate))) {
+                return candidate;
+            }
+        }
+        return null;
+    });
+
+    return found.filter(Boolean);
+}
+
 async function initializeHomeBackgroundCandidates() {
     if (homeBackgroundCandidates !== null) {
         return homeBackgroundCandidates;
     }
-    
+
+    const cached = readSessionCache(HOME_BACKGROUND_CACHE_KEY);
+    if (cached && cached.length) {
+        homeBackgroundCandidates = cached;
+        return homeBackgroundCandidates;
+    }
+
+    const manifest = await fetchTextManifest('images/home/background-list.txt');
+    if (manifest && manifest.length) {
+        homeBackgroundCandidates = manifest;
+        writeSessionCache(HOME_BACKGROUND_CACHE_KEY, manifest);
+        return homeBackgroundCandidates;
+    }
+
     const patterns = buildHomeBackgroundPatterns();
-    const found = [];
-    
-    const checks = patterns.map((path) => {
-        return new Promise((resolve) => {
-            tryLoadImage(
-                path,
-                (src) => {
-                    found.push(src);
-                    resolve();
-                },
-                () => resolve()
-            );
-        });
-    });
-    
-    await Promise.all(checks);
-    homeBackgroundCandidates = found;
+    homeBackgroundCandidates = await probeHomeBackgroundPatterns(patterns);
+    if (homeBackgroundCandidates.length) {
+        writeSessionCache(HOME_BACKGROUND_CACHE_KEY, homeBackgroundCandidates);
+    }
     return homeBackgroundCandidates;
 }
 
@@ -732,88 +799,194 @@ function tryLoadImage(imagePath, onSuccess, onError) {
     testImg.src = imagePath;
 }
 
-// Load images for home page circular gallery
+const HOME_BACKGROUND_IMAGE_COUNT = 10;
+const HOME_GALLERY_MAX_OVERLAP = 0.05;
+const HOME_GALLERY_MAX_PLACEMENT_ATTEMPTS = 250;
+
+function randomBetween(min, max) {
+    return min + Math.random() * (max - min);
+}
+
+function applyRandomGalleryLayout(item) {
+    const width = randomBetween(140, 220);
+    const aspectRatio = randomBetween(0.85, 1.2);
+    const top = randomBetween(6, 94);
+    const left = randomBetween(4, 96);
+    const rotation = randomBetween(-14, 14);
+
+    item.style.setProperty('--width', `${Math.round(width)}px`);
+    item.style.setProperty('--aspect-ratio', aspectRatio.toFixed(2));
+    item.style.setProperty('--top', `${top.toFixed(1)}%`);
+    item.style.setProperty('--left', `${left.toFixed(1)}%`);
+    item.style.setProperty('--rotation', `${rotation.toFixed(1)}deg`);
+}
+
+function getRectIntersectionArea(rectA, rectB) {
+    const overlapWidth = Math.max(0, Math.min(rectA.right, rectB.right) - Math.max(rectA.left, rectB.left));
+    const overlapHeight = Math.max(0, Math.min(rectA.bottom, rectB.bottom) - Math.max(rectA.top, rectB.top));
+    return overlapWidth * overlapHeight;
+}
+
+function getRectOverlapRatio(rectA, rectB) {
+    const intersection = getRectIntersectionArea(rectA, rectB);
+    if (intersection <= 0) return 0;
+
+    const areaA = rectA.width * rectA.height;
+    const areaB = rectB.width * rectB.height;
+    const smallerArea = Math.min(areaA, areaB);
+    if (smallerArea <= 0) return 0;
+
+    return intersection / smallerArea;
+}
+
+function exceedsMaxGalleryOverlap(candidateRect, placedRects) {
+    return placedRects.some((placedRect) => getRectOverlapRatio(candidateRect, placedRect) > HOME_GALLERY_MAX_OVERLAP);
+}
+
+function isRectInsideGallery(rect, galleryRect) {
+    const edgeMargin = 2;
+    return (
+        rect.left >= galleryRect.left - edgeMargin &&
+        rect.top >= galleryRect.top - edgeMargin &&
+        rect.right <= galleryRect.right + edgeMargin &&
+        rect.bottom <= galleryRect.bottom + edgeMargin
+    );
+}
+
+function placeGalleryItemWithoutOverlap(item, gallery, placedRects) {
+    for (let attempt = 0; attempt < HOME_GALLERY_MAX_PLACEMENT_ATTEMPTS; attempt++) {
+        applyRandomGalleryLayout(item);
+        gallery.appendChild(item);
+
+        const candidateRect = item.getBoundingClientRect();
+        const galleryRect = gallery.getBoundingClientRect();
+        const isValid =
+            isRectInsideGallery(candidateRect, galleryRect) &&
+            !exceedsMaxGalleryOverlap(candidateRect, placedRects);
+
+        if (isValid) {
+            placedRects.push(candidateRect);
+            return true;
+        }
+
+        gallery.removeChild(item);
+    }
+
+    return false;
+}
+
+function initHomeBackgroundGallery() {
+    const gallery = document.getElementById('home-background-gallery');
+    if (!gallery) return;
+
+    gallery.innerHTML = '';
+    const placedRects = [];
+
+    for (let i = 0; i < HOME_BACKGROUND_IMAGE_COUNT; i++) {
+        const item = document.createElement('div');
+        item.className = 'gallery-image-item';
+        item.dataset.imageId = String(i + 1);
+
+        const placeholder = document.createElement('div');
+        placeholder.className = 'gallery-image-placeholder-new';
+        item.appendChild(placeholder);
+
+        const placed = placeGalleryItemWithoutOverlap(item, gallery, placedRects);
+        if (!placed) {
+            applyRandomGalleryLayout(item);
+            gallery.appendChild(item);
+            placedRects.push(item.getBoundingClientRect());
+        }
+    }
+}
+
+function createBackgroundGalleryImage(src, index) {
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = '';
+    img.decoding = 'async';
+    img.loading = index < 3 ? 'eager' : 'lazy';
+    img.fetchPriority = index < 3 ? 'auto' : 'low';
+    img.style.width = '100%';
+    img.style.height = '100%';
+    img.style.objectFit = 'contain';
+    img.style.borderRadius = '4px';
+    return img;
+}
+
+// Load images for home page background gallery
 async function loadHomeGalleryImages() {
-    const galleryItems = document.querySelectorAll('#circular-gallery .gallery-image-item');
+    const galleryItems = document.querySelectorAll('#home-background-gallery .gallery-image-item');
     if (!galleryItems.length) return;
-    
+
     const candidates = await initializeHomeBackgroundCandidates();
     if (!candidates || !candidates.length) return;
-    
+
     const shuffled = candidates.slice().sort(() => Math.random() - 0.5);
     const selected = shuffled.slice(0, galleryItems.length);
-    
+
     galleryItems.forEach((item, index) => {
         const imagePath = selected[index];
         if (!imagePath) return;
-        
-        tryLoadImage(
-            imagePath,
-            (src) => {
-                const placeholder = item.querySelector('.gallery-image-placeholder-new');
-                if (placeholder) {
-                    const img = document.createElement('img');
+
+        const placeholder = item.querySelector('.gallery-image-placeholder-new');
+        if (!placeholder) return;
+
+        const img = createBackgroundGalleryImage(imagePath, index);
+        img.addEventListener('error', () => {
+            tryLoadImage(
+                imagePath,
+                (src) => {
                     img.src = src;
-                    img.style.width = '100%';
-                    img.style.height = '100%';
-                    img.style.objectFit = 'contain';
-                    img.style.borderRadius = '4px';
-                    placeholder.replaceWith(img);
-                }
-            },
-            () => {
-                // Keep placeholder if image doesn't exist
-            }
-        );
+                },
+                () => {}
+            );
+        }, { once: true });
+
+        placeholder.replaceWith(img);
     });
 }
 
-// Detect all notable work folders by scanning for images
 async function detectNotableWorkFolders() {
-    const foundFolders = [];
-    const maxScan = 200; // Scan up to 200 folders (reasonable limit)
-    const promises = [];
-    
-    // Try to detect folders by attempting to load images
-    for (let folderId = 1; folderId <= maxScan; folderId++) {
-        const promise = new Promise((resolve) => {
-            const extensions = ['jpg', 'jpeg', 'png'];
-            let tried = 0;
-            
-            const tryNext = () => {
-                if (tried >= extensions.length) {
-                    resolve(null); // Folder doesn't exist
-                    return;
-                }
-                
-                const ext = extensions[tried];
-                const imagePath = `images/notable-work/${folderId}/1.${ext}`;
-                const testImg = new Image();
-                
-                testImg.onload = () => {
-                    foundFolders.push(folderId);
-                    resolve(folderId);
-                };
-                
-                testImg.onerror = () => {
-                    tried++;
-                    tryNext();
-                };
-                
-                testImg.src = imagePath;
-            };
-            
-            tryNext();
-        });
-        
-        promises.push(promise);
+    const cached = readSessionCache(NOTABLE_FOLDERS_CACHE_KEY);
+    if (cached && cached.length) {
+        return cached;
     }
-    
-    await Promise.all(promises);
-    
-    // Sort folders (newest first for display)
-    foundFolders.sort((a, b) => b - a);
-    return foundFolders;
+
+    const manifest = await fetchTextManifest('images/notable-work/folders.txt');
+    if (manifest && manifest.length) {
+        const folderIds = manifest.map((id) => parseInt(id, 10)).filter((id) => !Number.isNaN(id));
+        writeSessionCache(NOTABLE_FOLDERS_CACHE_KEY, folderIds);
+        return folderIds;
+    }
+
+    const maxScan = 40;
+    const results = await runPool(
+        Array.from({ length: maxScan }, (_, i) => i + 1),
+        IMAGE_FETCH_POOL_SIZE,
+        async (folderId) => {
+            const paths = [
+                `images/notable-work/${folderId}/1.jpeg`,
+                `images/notable-work/${folderId}/1.jpg`,
+                `images/notable-work/${folderId}.jpeg`,
+                `images/notable-work/${folderId}.jpg`
+            ];
+
+            for (const path of paths) {
+                if (await imageExists(path)) {
+                    return folderId;
+                }
+            }
+            return null;
+        }
+    );
+
+    const folderIds = results.filter((folderId) => folderId !== null);
+    folderIds.sort((a, b) => b - a);
+    if (folderIds.length) {
+        writeSessionCache(NOTABLE_FOLDERS_CACHE_KEY, folderIds);
+    }
+    return folderIds;
 }
 
 // Dynamically create gallery items based on detected folders
@@ -854,8 +1027,6 @@ function loadNotableWorkImages() {
             return;
         }
         
-        console.log(`Loading image: DOM index ${index} → folder ${folderId}`);
-        
         // Helper to create and insert image
         const createImage = (src) => {
             const placeholder = item.querySelector('.gallery-image-placeholder');
@@ -863,6 +1034,8 @@ function loadNotableWorkImages() {
                 const img = document.createElement('img');
                 img.src = src;
                 img.className = 'gallery-image';
+                img.loading = 'lazy';
+                img.decoding = 'async';
                 img.style.cssText = 'width: 100%; height: 100%; object-fit: cover; border-radius: 4px;';
                 
                 img.onload = function() {
@@ -881,9 +1054,9 @@ function loadNotableWorkImages() {
             }
         };
         
-        // Try new structure first (folder/1.jpg), then fallback to old structure (folder.jpg)
+        // Try new structure first (folder/1.jpeg), then fallback to old structure (folder.jpg)
         tryLoadImage(
-            `images/notable-work/${folderId}/1.jpg`,
+            `images/notable-work/${folderId}/1.jpeg`,
             createImage,
             () => {
                 // Fallback to old structure
@@ -910,7 +1083,7 @@ function loadNotableWorkImages() {
 
 // Helper function to try loading image with multiple extensions
 function tryLoadWithExtensions(basePath, onSuccess, onError) {
-    const extensions = ['jpg', 'jpeg', 'png'];
+    const extensions = ['jpeg', 'jpg', 'png'];
     let tried = 0;
     
     const tryNext = () => {
@@ -1023,7 +1196,7 @@ function loadProjectImages(projectFolder) {
     projectImages.forEach((item) => {
         const imageId = item.getAttribute('data-project-image');
         // New structure: images/project-folder/1/1.jpg (main image in subfolder)
-        const imagePath = `images/${projectFolder}/${imageId}/1.jpg`;
+        const imagePath = `images/${projectFolder}/${imageId}/1.jpeg`;
         
         tryLoadImage(
             imagePath,
@@ -1032,6 +1205,8 @@ function loadProjectImages(projectFolder) {
                 if (placeholder) {
                     const img = document.createElement('img');
                     img.src = src;
+                    img.loading = 'lazy';
+                    img.decoding = 'async';
                     
                     // For ITNFI project, size to align with title and end before audio player
                     if (item.closest('.narcissus-project-page')) {
@@ -1058,7 +1233,7 @@ function loadProjectImages(projectFolder) {
             },
             () => {
                 // Fallback to old structure: images/project-folder/1.jpg
-                const fallbackPath = `images/${projectFolder}/${imageId}.jpg`;
+                const fallbackPath = `images/${projectFolder}/${imageId}.jpeg`;
                 tryLoadImage(
                     fallbackPath,
                     (src) => {
@@ -1153,17 +1328,27 @@ function loadCargoImages() {
     });
 }
 
+function scheduleIdleTask(task, timeout = 1500) {
+    if ('requestIdleCallback' in window) {
+        requestIdleCallback(task, { timeout });
+    } else {
+        setTimeout(task, 0);
+    }
+}
+
 // Load images when DOM is ready
 async function initializeImageLoading() {
-    // Load home gallery images if on home page
-    if (document.querySelector('#circular-gallery')) {
-        loadHomeGalleryImages();
+    // Home: layout immediately, load photos after first paint
+    if (document.querySelector('#home-background-gallery')) {
+        initHomeBackgroundGallery();
+        scheduleIdleTask(() => {
+            loadHomeGalleryImages();
+        });
     }
-    
+
     // Load notable work images if on notable work page
     const notableWorkGallery = document.querySelector('#notable-work-gallery');
     if (notableWorkGallery) {
-        // First, detect all folders and create gallery items dynamically
         const folderIds = await detectNotableWorkFolders();
         if (folderIds.length > 0) {
             createNotableWorkGalleryItems(folderIds);

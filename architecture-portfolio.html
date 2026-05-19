@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Architecture Portfolio (Fall 2025) - zaivion hampden</title>
+    <title>Architecture Portfolio (Spring 2026) - zaivion hampden</title>
     <link rel="stylesheet" href="styles.css">
     <style>
         body {
@@ -105,16 +105,45 @@
             <div class="pdf-container" id="pdf-container">
                 <iframe 
                     class="pdf-viewer" 
-                    src="images/architecture-portfolio/portfolio.pdf#toolbar=0&navpanes=0&scrollbar=0" 
+                    id="portfolio-pdf"
                     type="application/pdf"
-                    title="Architecture Portfolio (Fall 2025)">
-                    <p>Your browser does not support PDFs. <a href="images/architecture-portfolio/portfolio.pdf">Download the PDF</a>.</p>
+                    title="Architecture Portfolio (Spring 2026)">
+                    <p>Your browser does not support PDFs. <a id="portfolio-pdf-download" href="images/architecture-portfolio/portfolio.pdf">Download the PDF</a>.</p>
                 </iframe>
             </div>
         </div>
     </main>
     
     <script>
+        const portfolioPdfPath = 'images/architecture-portfolio/portfolio.pdf';
+
+        async function loadPortfolioPdf() {
+            const iframe = document.getElementById('portfolio-pdf');
+            const downloadLink = document.getElementById('portfolio-pdf-download');
+            if (!iframe) return;
+
+            let cacheBust = Date.now();
+            try {
+                const response = await fetch(portfolioPdfPath, { method: 'HEAD' });
+                if (response.ok) {
+                    const lastModified = response.headers.get('Last-Modified');
+                    if (lastModified) {
+                        cacheBust = new Date(lastModified).getTime();
+                    }
+                }
+            } catch (error) {
+                console.warn('Could not read PDF cache version:', error);
+            }
+
+            const pdfUrl = `${portfolioPdfPath}?v=${cacheBust}`;
+            iframe.src = `${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`;
+            if (downloadLink) {
+                downloadLink.href = pdfUrl;
+            }
+        }
+
+        loadPortfolioPdf();
+
         let scale = 1;
         const minScale = 0.25;
         const maxScale = 5;
