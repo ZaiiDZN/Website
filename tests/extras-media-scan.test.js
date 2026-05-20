@@ -48,18 +48,19 @@ ${loaderSource}
     await vm.runInContext('loadExtrasMedia()', sandbox);
 
     assert.strictEqual(sandbox.__renderCalled, true, 'carousel render should be called');
+    const detectedItems = Array.from(sandbox.__extrasItems);
     assert.deepStrictEqual(
-        sandbox.__extrasItems.map((item) => item.number),
+        detectedItems.map((item) => item.number),
         [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
         'extras media scan should include every committed numbered extra'
     );
     assert.strictEqual(
-        sandbox.__extrasItems.find((item) => item.number === 7).path,
+        detectedItems.find((item) => item.number === 7).path,
         'images/i-think-narcissus-fell-in/extras/7.MOV',
         'uppercase MOV extras should be detected on case-sensitive hosts'
     );
     assert.strictEqual(
-        sandbox.__extrasItems.find((item) => item.number === 7).type,
+        detectedItems.find((item) => item.number === 7).type,
         'video',
         'uppercase MOV extras should be classified as video'
     );
