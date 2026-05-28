@@ -1310,6 +1310,12 @@
             return 'unknown';
         }
 
+        function getExtensionCandidates(ext) {
+            const lower = ext.toLowerCase();
+            const upper = ext.toUpperCase();
+            return lower === upper ? [ext] : Array.from(new Set([ext, lower, upper]));
+        }
+
         // Load all extras media from folder
         async function loadExtrasMedia() {
             const extrasFolder = 'images/i-think-narcissus-fell-in/extras/';
@@ -1332,25 +1338,28 @@
                 
                 for (const extGroup of extensions) {
                     for (const ext of extGroup) {
-                        const filePath = `${extrasFolder}${fileNumber}.${ext}`;
-                        const fileType = getFileType(filePath);
-                        
-                        // Test if file exists
-                        try {
-                            const response = await fetch(filePath, { method: 'HEAD' });
-                            if (response.ok) {
-                                extrasItems.push({
-                                    path: filePath,
-                                    type: fileType,
-                                    number: fileNumber
-                                });
-                                fileFound = true;
-                                foundFiles++;
-                                break;
+                        for (const extensionCandidate of getExtensionCandidates(ext)) {
+                            const filePath = `${extrasFolder}${fileNumber}.${extensionCandidate}`;
+                            const fileType = getFileType(filePath);
+                            
+                            // Test if file exists
+                            try {
+                                const response = await fetch(filePath, { method: 'HEAD' });
+                                if (response.ok) {
+                                    extrasItems.push({
+                                        path: filePath,
+                                        type: fileType,
+                                        number: fileNumber
+                                    });
+                                    fileFound = true;
+                                    foundFiles++;
+                                    break;
+                                }
+                            } catch (e) {
+                                // File doesn't exist, continue
                             }
-                        } catch (e) {
-                            // File doesn't exist, continue
                         }
+                        if (fileFound) break;
                     }
                     if (fileFound) break;
                 }
