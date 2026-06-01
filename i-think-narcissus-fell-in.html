@@ -1310,6 +1310,12 @@
             return 'unknown';
         }
 
+        const extrasExtensionGroups = [
+            ['jpg', 'jpeg', 'png', 'gif', 'webp', 'JPG', 'JPEG', 'PNG', 'GIF', 'WEBP'],
+            ['mp4', 'mov', 'webm', 'MP4', 'MOV', 'WEBM'],
+            ['mp3', 'wav', 'm4a', 'MP3', 'WAV', 'M4A']
+        ];
+
         // Load all extras media from folder
         async function loadExtrasMedia() {
             const extrasFolder = 'images/i-think-narcissus-fell-in/extras/';
@@ -1321,16 +1327,9 @@
             const maxFiles = 50; // Reasonable limit
             
             while (foundFiles < maxFiles) {
-                // Try common extensions
-                const extensions = [
-                    ['jpg', 'jpeg', 'png', 'gif', 'webp'],
-                    ['mp4', 'mov', 'webm'],
-                    ['mp3', 'wav', 'm4a']
-                ];
-                
                 let fileFound = false;
                 
-                for (const extGroup of extensions) {
+                for (const extGroup of extrasExtensionGroups) {
                     for (const ext of extGroup) {
                         const filePath = `${extrasFolder}${fileNumber}.${ext}`;
                         const fileType = getFileType(filePath);
