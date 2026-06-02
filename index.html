@@ -35,10 +35,17 @@
                         </div>
                     </div>
                     <div class="column-right">
-                        <div class="section-label">CURRENT WORK</div>
-                        <hr class="section-divider">
-                        <div id="home-current-work-content">
-                        <p>Zaivion has just completed his first collection, I Think Narcissus Fell In, marking the beginning of a new era. This era is defined by a new understanding of ceramics, where he explores new techniques and media to improve his ability to evoke emotion with his art. Currently, he is pursuing his degree and his art abroad in Copenhagen, Denmark. While traveling, Zaivion plans to utilize his experiences abroad to inform new work and possibly a new collection. Once summer begins, Zaivion will resume commissioned work.</p>
+                        <div class="home-right-block">
+                            <div class="section-label">CURRENT WORK</div>
+                            <hr class="section-divider">
+                            <div id="home-current-work-content">
+                            <p>Zaivion has just completed his first collection, I Think Narcissus Fell In, marking the beginning of a new era. This era is defined by a new understanding of ceramics, where he explores new techniques and media to improve his ability to evoke emotion with his art. Currently, he is pursuing his degree and his art abroad in Copenhagen, Denmark. While traveling, Zaivion plans to utilize his experiences abroad to inform new work and possibly a new collection. Once summer begins, Zaivion will resume commissioned work.</p>
+                            </div>
+                        </div>
+                        <div class="home-right-block">
+                            <div class="section-label">ACCOMPLISHMENTS</div>
+                            <hr class="section-divider">
+                            <div id="home-accomplishments-content"></div>
                         </div>
                     </div>
                 </div>
@@ -66,12 +73,21 @@
 
     <script src="script.js"></script>
     <script>
+        // Wrap *text* in home-data.txt with <i> for emphasis
+        function formatHomeParagraph(text) {
+            const escaped = text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+            return escaped.replace(/\*([^*]+)\*/g, '<i>$1</i>');
+        }
+
         // Load home page text content from file
         async function loadHomePageData() {
             const dataPath = 'images/home/home-data.txt';
             
             try {
-                const response = await fetch(dataPath);
+                const response = await fetch(`${dataPath}?t=${Date.now()}`, { cache: 'no-store' });
                 if (!response.ok) {
                     console.log('Home data file not found, using default content');
                     return;
@@ -83,8 +99,11 @@
                 let name = '';
                 let aboutMe = [];
                 let currentWork = [];
+                let accomplishments = [];
+                let accomplishmentEntry = [];
                 let inAboutMe = false;
                 let inCurrentWork = false;
+                let inAccomplishments = false;
                 
                 lines.forEach(line => {
                     const trimmed = line.trim();
@@ -94,9 +113,11 @@
                         name = trimmed.substring(5).trim();
                         inAboutMe = false;
                         inCurrentWork = false;
+                        inAccomplishments = false;
                     } else if (lowerTrimmed === 'about me:' || lowerTrimmed === 'about-me:' || lowerTrimmed.startsWith('about me')) {
                         inAboutMe = true;
                         inCurrentWork = false;
+                        inAccomplishments = false;
                         aboutMe = [];
                         // If there's text after the colon, add it
                         const afterColon = trimmed.substring(trimmed.indexOf(':') + 1).trim();
@@ -106,11 +127,22 @@
                     } else if (lowerTrimmed === 'current work:' || lowerTrimmed === 'current-work:' || lowerTrimmed.startsWith('current work')) {
                         inCurrentWork = true;
                         inAboutMe = false;
+                        inAccomplishments = false;
                         currentWork = [];
                         // If there's text after the colon, add it
                         const afterColon = trimmed.substring(trimmed.indexOf(':') + 1).trim();
                         if (afterColon) {
                             currentWork.push(afterColon);
+                        }
+                    } else if (lowerTrimmed === 'accomplishments:' || lowerTrimmed.startsWith('accomplishments')) {
+                        inAccomplishments = true;
+                        inAboutMe = false;
+                        inCurrentWork = false;
+                        accomplishments = [];
+                        accomplishmentEntry = [];
+                        const afterColon = trimmed.substring(trimmed.indexOf(':') + 1).trim();
+                        if (afterColon) {
+                            accomplishmentEntry.push(afterColon);
                         }
                     } else if (inAboutMe) {
                         // Empty line means new paragraph, otherwise continue current paragraph
@@ -138,8 +170,21 @@
                                 currentWork.push(trimmed);
                             }
                         }
+                    } else if (inAccomplishments) {
+                        if (trimmed === '') {
+                            if (accomplishmentEntry.length) {
+                                accomplishments.push(accomplishmentEntry);
+                                accomplishmentEntry = [];
+                            }
+                        } else {
+                            accomplishmentEntry.push(trimmed);
+                        }
                     }
                 });
+
+                if (accomplishmentEntry.length) {
+                    accomplishments.push(accomplishmentEntry);
+                }
                 
                 // Update name
                 const nameElement = document.getElementById('home-name-text');
@@ -186,7 +231,18 @@
                     if (currentPara) {
                         paragraphs.push(currentPara);
                     }
-                    currentWorkElement.innerHTML = paragraphs.map(para => `<p>${para}</p>`).join('');
+                    currentWorkElement.innerHTML = paragraphs.map(para => `<p>${formatHomeParagraph(para)}</p>`).join('');
+                }
+
+                const accomplishmentsElement = document.getElementById('home-accomplishments-content');
+                if (accomplishmentsElement && accomplishments.length > 0) {
+                    accomplishmentsElement.innerHTML = accomplishments.map((entry) => {
+                        const title = entry[0] ? `<p class="accomplishment-title">${formatHomeParagraph(entry[0])}</p>` : '';
+                        const details = entry.slice(1).map((line) =>
+                            `<p class="accomplishment-detail">${formatHomeParagraph(line)}</p>`
+                        ).join('');
+                        return `<div class="accomplishment-item">${title}${details}</div>`;
+                    }).join('');
                 }
             } catch (error) {
                 console.error('Error loading home page data:', error);

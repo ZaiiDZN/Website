@@ -174,7 +174,8 @@ body.overlay-active {
     pointer-events: auto;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
+    overflow: hidden;
 }
 
 /* Name Header */
@@ -197,13 +198,16 @@ body.overlay-active {
     display: inline-block;
 }
 
-/* Info Section - Two Columns */
+/* Info Section - Two Columns (scrollable; nav stays fixed below) */
 .info-section {
     padding: 0.5rem 0;
     flex: 1;
+    min-height: 0;
     display: flex;
-    align-items: center;
-    overflow: hidden;
+    align-items: flex-start;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .two-column {
@@ -245,6 +249,41 @@ body.overlay-active {
 .column-left em,
 .column-right em {
     font-style: italic;
+}
+
+.home-right-block + .home-right-block {
+    margin-top: 2.5rem;
+}
+
+.accomplishment-item {
+    margin-bottom: 1.25rem;
+}
+
+.accomplishment-item:last-child {
+    margin-bottom: 0;
+}
+
+.accomplishment-item p {
+    margin: 0;
+}
+
+.accomplishment-title {
+    font-size: inherit;
+    line-height: 1.15;
+}
+
+.accomplishment-detail {
+    font-size: 0.82rem;
+    line-height: 1.15;
+    color: var(--text-light);
+}
+
+.accomplishment-title + .accomplishment-detail {
+    margin-top: 0.15rem;
+}
+
+.accomplishment-detail + .accomplishment-detail {
+    margin-top: 0.1rem;
 }
 
 /* Navigation Links Section */
@@ -3149,9 +3188,8 @@ html {
     .home-page {
         width: 100%;
         max-width: 100vw;
-        overflow-x: hidden;
-        overflow-y: auto;
-        height: auto;
+        overflow: hidden;
+        height: 100vh;
         min-height: 100vh;
     }
 
@@ -3160,19 +3198,20 @@ html {
         max-width: 100vw;
     }
     
-    /* Make overlay content scrollable on mobile */
     .overlay-content {
-        position: relative;
-        height: auto;
-        min-height: 100vh;
-        overflow-y: auto;
+        position: absolute;
+        height: 100%;
+        min-height: 0;
+        overflow: hidden;
         justify-content: flex-start;
-        padding-bottom: 2rem;
+        padding-bottom: 0;
     }
     
     .info-section {
-        overflow: visible;
-        flex: none;
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
         padding: 1rem 0;
     }
     
