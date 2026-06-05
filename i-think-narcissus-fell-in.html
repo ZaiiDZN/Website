@@ -1321,10 +1321,10 @@
             const maxFiles = 50; // Reasonable limit
             
             while (foundFiles < maxFiles) {
-                // Try common extensions
+                // Include uppercase video variants because GitHub Pages paths are case-sensitive.
                 const extensions = [
                     ['jpg', 'jpeg', 'png', 'gif', 'webp'],
-                    ['mp4', 'mov', 'webm'],
+                    ['mp4', 'mov', 'MOV', 'webm'],
                     ['mp3', 'wav', 'm4a']
                 ];
                 
