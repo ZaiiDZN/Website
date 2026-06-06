@@ -76,6 +76,10 @@ function createSessionStorage(initial = {}) {
     };
 }
 
+function hostArray(value) {
+    return Array.from(value);
+}
+
 function loadScript({
     fetchImpl = async () => ({ ok: false, text: async () => '' }),
     documentOverrides = {},
@@ -144,7 +148,7 @@ async function testNotableManifestBeatsStaleSessionCache() {
 
     const folders = await context.detectNotableWorkFolders();
 
-    assert.deepStrictEqual(folders, [18, 17]);
+    assert.deepStrictEqual(hostArray(folders), [18, 17]);
     assert.strictEqual(fetchCalls.length, 1);
     assert.match(fetchCalls[0].url, /^images\/notable-work\/folders\.txt\?v=\d+$/);
     assert.strictEqual(fetchCalls[0].options.cache, 'no-store');
@@ -167,7 +171,7 @@ async function testHomeManifestBeatsStaleSessionCache() {
 
     const backgrounds = await context.initializeHomeBackgroundCandidates();
 
-    assert.deepStrictEqual(backgrounds, [
+    assert.deepStrictEqual(hostArray(backgrounds), [
         'images/notable-work/18/1.jpeg',
         'images/notable-work/17/1.jpeg'
     ]);
@@ -187,7 +191,7 @@ async function testManifestFailureFallsBackToSessionCache() {
 
     const folders = await context.detectNotableWorkFolders();
 
-    assert.deepStrictEqual(folders, [17, 16]);
+    assert.deepStrictEqual(hostArray(folders), [17, 16]);
 }
 
 async function testLatestModalOpenWinsRace() {
