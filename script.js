@@ -47,6 +47,7 @@ const observer = new IntersectionObserver((entries) => {
 const pieceModal = document.getElementById('piece-modal');
 const modalBackdrop = document.getElementById('modal-backdrop');
 const modalClose = document.getElementById('modal-close');
+let openPieceModalRequestId = 0;
 
 // ============================================================================
 // NOTABLE WORK GALLERY SYSTEM (FULLY DYNAMIC)
@@ -151,6 +152,7 @@ document.querySelectorAll('.gallery-item').forEach(item => {
 
 // Close modal
 function closePieceModal() {
+    openPieceModalRequestId += 1;
     if (pieceModal) {
         pieceModal.classList.remove('active');
         document.body.style.overflow = '';
@@ -333,6 +335,8 @@ async function openPieceModal(folderId) {
         console.error('Folder ID not found in gallery:', folderId);
         return;
     }
+
+    const requestId = ++openPieceModalRequestId;
     
     // Load piece data (title, size, medium, year, description) from text file
     const pieceData = await loadPieceData(folderId);
@@ -407,6 +411,10 @@ async function openPieceModal(folderId) {
     
     // Wait for all images to be checked
     await Promise.all([checkMainImage, ...checkExtraImages]);
+
+    if (requestId !== openPieceModalRequestId) {
+        return;
+    }
     
     // Separate main and extras - ensure main (1.jpg) is NOT in extras
     const mainImage = allImages.find(img => img.isMain);
@@ -646,7 +654,8 @@ let homeBackgroundCandidates = null;
 
 async function fetchTextManifest(url) {
     try {
-        const response = await fetch(url);
+        const separator = url.includes('?') ? '&' : '?';
+        const response = await fetch(`${url}${separator}v=${Date.now()}`, { cache: 'no-store' });
         if (!response.ok) return null;
 
         return (await response.text())
@@ -740,16 +749,16 @@ async function initializeHomeBackgroundCandidates() {
         return homeBackgroundCandidates;
     }
 
-    const cached = readSessionCache(HOME_BACKGROUND_CACHE_KEY);
-    if (cached && cached.length) {
-        homeBackgroundCandidates = cached;
-        return homeBackgroundCandidates;
-    }
-
     const manifest = await fetchTextManifest('images/home/background-list.txt');
     if (manifest && manifest.length) {
         homeBackgroundCandidates = manifest;
         writeSessionCache(HOME_BACKGROUND_CACHE_KEY, manifest);
+        return homeBackgroundCandidates;
+    }
+
+    const cached = readSessionCache(HOME_BACKGROUND_CACHE_KEY);
+    if (cached && cached.length) {
+        homeBackgroundCandidates = cached;
         return homeBackgroundCandidates;
     }
 
@@ -948,16 +957,16 @@ async function loadHomeGalleryImages() {
 }
 
 async function detectNotableWorkFolders() {
-    const cached = readSessionCache(NOTABLE_FOLDERS_CACHE_KEY);
-    if (cached && cached.length) {
-        return cached;
-    }
-
     const manifest = await fetchTextManifest('images/notable-work/folders.txt');
     if (manifest && manifest.length) {
         const folderIds = manifest.map((id) => parseInt(id, 10)).filter((id) => !Number.isNaN(id));
         writeSessionCache(NOTABLE_FOLDERS_CACHE_KEY, folderIds);
         return folderIds;
+    }
+
+    const cached = readSessionCache(NOTABLE_FOLDERS_CACHE_KEY);
+    if (cached && cached.length) {
+        return cached;
     }
 
     const maxScan = 40;
