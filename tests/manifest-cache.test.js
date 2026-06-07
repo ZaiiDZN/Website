@@ -137,7 +137,7 @@ async function testNotableWorkManifestWinsOverStaleSessionCache() {
 
     const folderIds = await context.detectNotableWorkFolders();
 
-    assert.deepEqual(folderIds, [18, 17, 16]);
+    assert.deepEqual(Array.from(folderIds), [18, 17, 16]);
     assert.equal(calls.length, 1);
     assert.match(calls[0].url, /^images\/notable-work\/folders\.txt\?t=\d+$/);
     assert.deepEqual(calls[0].init, { cache: 'no-store' });
@@ -160,7 +160,7 @@ async function testHomeBackgroundManifestWinsOverStaleSessionCache() {
 
     const backgrounds = await context.initializeHomeBackgroundCandidates();
 
-    assert.deepEqual(backgrounds, [
+    assert.deepEqual(Array.from(backgrounds), [
         'images/notable-work/18/1.jpeg',
         'images/notable-work/17/1.jpeg'
     ]);
