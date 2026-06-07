@@ -644,9 +644,15 @@ const NOTABLE_FOLDERS_CACHE_KEY = 'zh-notable-folders-v1';
 
 let homeBackgroundCandidates = null;
 
-async function fetchTextManifest(url) {
+function buildCacheBustedUrl(url) {
+    const separator = url.includes('?') ? '&' : '?';
+    return `${url}${separator}t=${Date.now()}`;
+}
+
+async function fetchTextManifest(url, options = {}) {
     try {
-        const response = await fetch(url);
+        const requestUrl = options.cacheBust ? buildCacheBustedUrl(url) : url;
+        const response = await fetch(requestUrl, options.cacheBust ? { cache: 'no-store' } : undefined);
         if (!response.ok) return null;
 
         return (await response.text())
@@ -740,16 +746,16 @@ async function initializeHomeBackgroundCandidates() {
         return homeBackgroundCandidates;
     }
 
-    const cached = readSessionCache(HOME_BACKGROUND_CACHE_KEY);
-    if (cached && cached.length) {
-        homeBackgroundCandidates = cached;
-        return homeBackgroundCandidates;
-    }
-
-    const manifest = await fetchTextManifest('images/home/background-list.txt');
+    const manifest = await fetchTextManifest('images/home/background-list.txt', { cacheBust: true });
     if (manifest && manifest.length) {
         homeBackgroundCandidates = manifest;
         writeSessionCache(HOME_BACKGROUND_CACHE_KEY, manifest);
+        return homeBackgroundCandidates;
+    }
+
+    const cached = readSessionCache(HOME_BACKGROUND_CACHE_KEY);
+    if (cached && cached.length) {
+        homeBackgroundCandidates = cached;
         return homeBackgroundCandidates;
     }
 
@@ -948,16 +954,16 @@ async function loadHomeGalleryImages() {
 }
 
 async function detectNotableWorkFolders() {
-    const cached = readSessionCache(NOTABLE_FOLDERS_CACHE_KEY);
-    if (cached && cached.length) {
-        return cached;
-    }
-
-    const manifest = await fetchTextManifest('images/notable-work/folders.txt');
+    const manifest = await fetchTextManifest('images/notable-work/folders.txt', { cacheBust: true });
     if (manifest && manifest.length) {
         const folderIds = manifest.map((id) => parseInt(id, 10)).filter((id) => !Number.isNaN(id));
         writeSessionCache(NOTABLE_FOLDERS_CACHE_KEY, folderIds);
         return folderIds;
+    }
+
+    const cached = readSessionCache(NOTABLE_FOLDERS_CACHE_KEY);
+    if (cached && cached.length) {
+        return cached;
     }
 
     const maxScan = 40;
