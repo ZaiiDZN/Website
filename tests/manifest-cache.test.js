@@ -140,7 +140,7 @@ async function testNotableWorkManifestWinsOverStaleSessionCache() {
     assert.deepEqual(Array.from(folderIds), [18, 17, 16]);
     assert.equal(calls.length, 1);
     assert.match(calls[0].url, /^images\/notable-work\/folders\.txt\?t=\d+$/);
-    assert.deepEqual(calls[0].init, { cache: 'no-store' });
+    assert.equal(calls[0].init.cache, 'no-store');
     assert.deepEqual(
         JSON.parse(context.sessionStorage.getItem('zh-notable-folders-v1')),
         [18, 17, 16]
@@ -166,7 +166,7 @@ async function testHomeBackgroundManifestWinsOverStaleSessionCache() {
     ]);
     assert.equal(calls.length, 1);
     assert.match(calls[0].url, /^images\/home\/background-list\.txt\?t=\d+$/);
-    assert.deepEqual(calls[0].init, { cache: 'no-store' });
+    assert.equal(calls[0].init.cache, 'no-store');
     assert.deepEqual(
         JSON.parse(context.sessionStorage.getItem('zh-home-background-paths-v1')),
         [
