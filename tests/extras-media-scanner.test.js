@@ -7,7 +7,7 @@ const htmlPath = path.join(root, 'i-think-narcissus-fell-in.html');
 const extrasDir = path.join(root, 'images', 'i-think-narcissus-fell-in', 'extras');
 
 const html = fs.readFileSync(htmlPath, 'utf8');
-const extensionMatch = html.match(/const extensions = (\[[\s\S]*?\n\s*\]);/);
+const extensionMatch = html.match(/const extensions = (\[\s*\[[\s\S]*?\]\s*\]);/);
 
 assert(extensionMatch, 'Could not find extras media extension list');
 
