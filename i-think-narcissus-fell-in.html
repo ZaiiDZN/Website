@@ -800,6 +800,7 @@
                             
                             // Replace audio element with play button
                             if (audioWrapper && !audioWrapper.querySelector('.media-play-button')) {
+                                audioWrapper.style.display = '';
                                 const playbackAudio = new Audio(detectedPath);
                                 
                                 const playButton = document.createElement('button');
