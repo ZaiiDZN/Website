@@ -313,6 +313,17 @@ function updateModalArrows(currentIndex, totalImages) {
     }
 }
 
+// Extract the piece image number from a path like images/notable-work/17/3.jpeg
+function getPieceImageNumber(imagePath) {
+    const match = String(imagePath || '').match(/\/(\d+)\.[^./]+$/);
+    return match ? parseInt(match[1], 10) : Number.MAX_SAFE_INTEGER;
+}
+
+// Keep main + extras in numeric file order regardless of probe completion timing.
+function orderPieceImagesByNumber(images) {
+    return images.slice().sort((a, b) => getPieceImageNumber(a.path) - getPieceImageNumber(b.path));
+}
+
 // Open piece modal with piece data
 async function openPieceModal(folderId) {
     if (!pieceModal) return;
@@ -337,12 +348,11 @@ async function openPieceModal(folderId) {
     // Load piece data (title, size, medium, year, description) from text file
     const pieceData = await loadPieceData(folderId);
     
-    // Load all images (main + extras) and check which exist
-    const allImages = [];
+    // Probe main + extras in parallel, but store into fixed slots so onload
+    // timing cannot scramble the gallery/carousel sequence.
+    let mainImage = null;
+    const extraImageSlots = new Array(9).fill(null); // files 2..10
     const basePath = `images/notable-work/${folderId}`;
-    
-    // Clear any previous images to avoid cross-contamination
-    allImages.length = 0;
     
     // Check if main image exists (try .jpg, .jpeg, .png)
     const checkMainImage = new Promise((resolve) => {
@@ -359,7 +369,7 @@ async function openPieceModal(folderId) {
             const mainImagePath = `${basePath}/1.${ext}`;
             const testImg = new Image();
             testImg.onload = () => {
-                allImages.push({ path: mainImagePath, isMain: true });
+                mainImage = { path: mainImagePath, isMain: true };
                 resolve();
             };
             testImg.onerror = () => {
@@ -375,6 +385,7 @@ async function openPieceModal(folderId) {
     // Check for extra images (2.jpg, 2.jpeg, 3.jpg, etc.)
     const checkExtraImages = [];
     for (let i = 2; i <= 10; i++) {
+        const slotIndex = i - 2;
         checkExtraImages.push(
             new Promise((resolve) => {
                 const extensions = ['jpg', 'jpeg', 'png'];
@@ -390,7 +401,7 @@ async function openPieceModal(folderId) {
                     const imgPath = `${basePath}/${i}.${ext}`;
                     const testImg = new Image();
                     testImg.onload = () => {
-                        allImages.push({ path: imgPath, isMain: false });
+                        extraImageSlots[slotIndex] = { path: imgPath, isMain: false };
                         resolve();
                     };
                     testImg.onerror = () => {
@@ -408,10 +419,8 @@ async function openPieceModal(folderId) {
     // Wait for all images to be checked
     await Promise.all([checkMainImage, ...checkExtraImages]);
     
-    // Separate main and extras - ensure main (1.jpg) is NOT in extras
-    const mainImage = allImages.find(img => img.isMain);
-    // Filter out main image from extras (in case it was added twice)
-    const extraImages = allImages.filter(img => !img.isMain && !img.path.includes('/1.'));
+    // Preserve numeric order; filter empties and sort as a safety net.
+    const extraImages = orderPieceImagesByNumber(extraImageSlots.filter(Boolean));
     
     // Combine all images in order: main first, then extras
     const allImagesOrdered = [];
