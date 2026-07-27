@@ -431,6 +431,26 @@
         const pieceMediaItems = {};
         const pieceMainImages = {};
         let currentCarousel = { items: [], currentIndex: 0, type: null };
+
+        // Resolve numbered media file (e.g. ".../2/3.jpeg" -> 3)
+        function getNumberedMediaFileNumber(src) {
+            if (!src) return null;
+            const match = String(src).match(/\/(\d+)\.(jpe?g|png|gif|webp)(?:\?|#|$)/i);
+            return match ? parseInt(match[1], 10) : null;
+        }
+
+        // Find carousel start index for the clicked main image
+        function resolveMainImageCarouselIndex(clickedSrc, mainImages, fallbackIndex = 0) {
+            const safeFallback = Math.max(0, fallbackIndex || 0);
+            const fileNum = getNumberedMediaFileNumber(clickedSrc);
+            if (fileNum == null || !mainImages || mainImages.length === 0) {
+                return safeFallback;
+            }
+            const found = mainImages.findIndex(
+                (item) => getNumberedMediaFileNumber(item.src) === fileNum
+            );
+            return found !== -1 ? found : safeFallback;
+        }
         
         // Track currently playing audio to ensure only one plays at a time
         let currentlyPlayingAudio = null;
@@ -1053,37 +1073,48 @@
             }
         });
         
-        // Load main images for each piece and store them
+        // Load main images for each piece and store them in stable file-number order
         function loadMainImages() {
             for (let pieceId = 1; pieceId <= 6; pieceId++) {
                 const pieceFolder = `images/i-think-narcissus-fell-in/${pieceId}`;
-                const mainImages = [];
-                
-                // Check for main images (1.jpg, 2.jpg, 3.jpg)
+                const slots = new Array(3);
+                let remaining = 3;
+
+                const finalizeIfDone = () => {
+                    remaining -= 1;
+                    if (remaining <= 0) {
+                        pieceMainImages[pieceId] = slots.filter(Boolean);
+                    }
+                };
+
+                // Probe 1.ext, 2.ext, 3.ext into fixed slots so load order cannot scramble the carousel
                 for (let i = 1; i <= 3; i++) {
                     const extensions = ['jpg', 'jpeg', 'png'];
-                    let found = false;
-                    
-                    extensions.forEach(ext => {
-                        if (found) return;
+                    let tried = 0;
+
+                    const tryNext = () => {
+                        if (tried >= extensions.length) {
+                            finalizeIfDone();
+                            return;
+                        }
+
+                        const ext = extensions[tried++];
                         const imgPath = `${pieceFolder}/${i}.${ext}`;
                         const testImg = new Image();
                         testImg.onload = () => {
-                            if (!found) {
-                                found = true;
-                                mainImages.push({
-                                    type: 'image',
-                                    src: imgPath,
-                                    alt: `Piece ${pieceId} - Image ${i}`
-                                });
-                            }
+                            slots[i - 1] = {
+                                type: 'image',
+                                src: imgPath,
+                                alt: `Piece ${pieceId} - Image ${i}`
+                            };
+                            finalizeIfDone();
                         };
-                        testImg.onerror = () => {};
+                        testImg.onerror = tryNext;
                         testImg.src = imgPath;
-                    });
+                    };
+
+                    tryNext();
                 }
-                
-                pieceMainImages[pieceId] = mainImages;
             }
         }
         
@@ -1143,26 +1174,26 @@
             if (img && pieceZoomOverlay) {
                 e.preventDefault();
                 e.stopPropagation();
-                
-                // Get the image source and find which piece it belongs to
+
                 const imgSrc = img.src;
-                let pieceId = null;
-                let imageIndex = null;
-                
-                // Find which piece this image belongs to
-                for (let pid = 1; pid <= 6; pid++) {
-                    const mainImgs = pieceMainImages[pid] || [];
-                    const foundIndex = mainImgs.findIndex(item => item.src === imgSrc || imgSrc.includes(`/${pid}/`));
-                    if (foundIndex !== -1) {
-                        pieceId = pid;
-                        imageIndex = foundIndex;
-                        break;
-                    }
-                }
-                
-                // If we found the piece, use carousel; otherwise fallback to single image
-                if (pieceId && pieceMainImages[pieceId] && pieceMainImages[pieceId].length > 0) {
-                    openMediaCarousel(pieceMainImages[pieceId], imageIndex || 0, 'main');
+                const projectPiece = img.closest('.project-piece');
+                const pieceId = parseInt(
+                    projectPiece?.querySelector('.mixed-media-row[data-piece-id]')?.getAttribute('data-piece-id') || '',
+                    10
+                );
+                const row = img.closest('.multi-image-row');
+                const domIndex = row
+                    ? Array.from(row.querySelectorAll('img')).indexOf(img)
+                    : 0;
+
+                // Prefer the piece's discovered main images, starting on the clicked file number
+                if (!Number.isNaN(pieceId) && pieceMainImages[pieceId] && pieceMainImages[pieceId].length > 0) {
+                    const imageIndex = resolveMainImageCarouselIndex(
+                        imgSrc,
+                        pieceMainImages[pieceId],
+                        Math.max(0, domIndex)
+                    );
+                    openMediaCarousel(pieceMainImages[pieceId], imageIndex, 'main');
                 } else {
                     // Fallback: single image display
                     const pieceZoomMedia = document.getElementById('piece-image-zoom-media');
@@ -1171,8 +1202,8 @@
                         // Hide arrows for single image
                         document.getElementById('main-image-carousel-left')?.classList.add('hidden');
                         document.getElementById('main-image-carousel-right')?.classList.add('hidden');
-                pieceZoomOverlay.classList.add('active');
-                document.body.style.overflow = 'hidden';
+                        pieceZoomOverlay.classList.add('active');
+                        document.body.style.overflow = 'hidden';
                     }
                 }
             }
