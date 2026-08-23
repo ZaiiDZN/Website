@@ -1,4 +1,7 @@
 # Image paths for home page background (one per line)
+images/notable-work/20/1.jpeg
+images/notable-work/19/1.jpeg
+images/notable-work/18/1.jpeg
 images/notable-work/17/1.jpeg
 images/notable-work/16/1.jpeg
 images/notable-work/15/1.jpeg

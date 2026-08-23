@@ -73,13 +73,21 @@
 
     <script src="script.js"></script>
     <script>
-        // Wrap *text* in home-data.txt with <i> for emphasis
+        // Wrap *text* in <i>, **text** in <strong>, and [label](url) in links for home-data.txt
         function formatHomeParagraph(text) {
             const escaped = text
                 .replace(/&/g, '&amp;')
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;');
-            return escaped.replace(/\*([^*]+)\*/g, '<i>$1</i>');
+            return escaped
+                .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, label, url) => {
+                    if (url === 'showcase') {
+                        return `<button type="button" class="showcase-link">${label}</button>`;
+                    }
+                    return `<a href="${url}">${label}</a>`;
+                })
+                .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*([^*]+)\*/g, '<i>$1</i>');
         }
 
         // Load home page text content from file

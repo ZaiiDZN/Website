@@ -1,0 +1,553 @@
+/* All White Galleries — fonts */
+
+@font-face {
+    font-family: 'Gallery';
+    src: url('fonts/Gallery.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Charcoal';
+    src: url('fonts/Charcoal-pem1.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'NeuMurale';
+    src: url('fonts/NeuMurale-Jp4yx.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Nighty';
+    src: url('fonts/Nightydemo.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Perspect';
+    src: url('fonts/Perspect-167v.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Slibinas';
+    src: url('fonts/Slibinas.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Throwupz';
+    src: url('fonts/Throwupz-z7vX.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+.awg-nav-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #000000;
+    line-height: 1;
+    text-transform: lowercase;
+    letter-spacing: 0;
+    transition: opacity 0.3s ease;
+    padding: 0.7rem 1.15rem;
+    min-height: 3.25rem;
+    min-width: 5.25rem;
+    box-sizing: border-box;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.awg-nav-link:hover {
+    color: #000000;
+    opacity: 0.65;
+}
+
+.awg-nav-char {
+    position: relative;
+    display: inline-block;
+    color: #000000;
+    transform-origin: center bottom;
+    -webkit-font-smoothing: antialiased;
+    pointer-events: none;
+}
+
+/* home */
+.awg-nav-link-home .awg-nav-h {
+    font-family: 'Charcoal', sans-serif;
+    font-size: 1.45rem;
+    transform: rotate(-3deg) translateY(0.04em);
+    margin-right: 0.02em;
+}
+
+.awg-nav-link-home .awg-nav-o {
+    font-family: 'Nighty', cursive;
+    font-size: 1.38rem;
+    transform: rotate(5deg) translate(-0.03em, 0.06em);
+    margin-right: 0.04em;
+}
+
+.awg-nav-link-home .awg-nav-m {
+    font-family: 'Throwupz', sans-serif;
+    font-size: 1.48rem;
+    transform: rotate(-2deg) translateY(-0.02em);
+    margin-right: 0.02em;
+}
+
+.awg-nav-link-home .awg-nav-e {
+    font-family: 'NeuMurale', serif;
+    font-size: 1.35rem;
+    transform: translateY(0.08em);
+}
+
+/* back */
+.awg-nav-link-back .awg-nav-b {
+    font-family: 'Slibinas', serif;
+    font-size: 1.42rem;
+    transform: rotate(-2deg);
+    margin-right: 0.03em;
+}
+
+.awg-nav-link-back .awg-nav-a {
+    font-family: 'Perspect', sans-serif;
+    font-size: 1.46rem;
+    transform: perspective(400px) rotateY(-18deg) rotate(-1deg);
+    margin-right: 0.04em;
+}
+
+.awg-nav-link-back .awg-nav-c {
+    font-family: 'Throwupz', sans-serif;
+    font-size: 1.44rem;
+    transform: rotate(4deg) translateY(0.03em);
+    margin-right: 0.02em;
+}
+
+.awg-nav-link-back .awg-nav-k {
+    font-family: 'Charcoal', sans-serif;
+    font-size: 1.5rem;
+    transform: rotate(-1deg) translateY(-0.01em);
+}
+
+/* inquire */
+.awg-nav-link-inquire {
+    min-width: 7.5rem;
+}
+
+.awg-nav-link-inquire .awg-nav-i {
+    font-family: 'NeuMurale', serif;
+    font-size: 1.4rem;
+    transform: rotate(-4deg) translateY(0.05em);
+    margin-right: 0.03em;
+}
+
+.awg-nav-link-inquire .awg-nav-n {
+    font-family: 'Throwupz', sans-serif;
+    font-size: 1.46rem;
+    transform: rotate(3deg) translateY(-0.02em);
+    margin-right: 0.02em;
+}
+
+.awg-nav-link-inquire .awg-nav-q {
+    font-family: 'Charcoal', sans-serif;
+    font-size: 1.48rem;
+    transform: rotate(-2deg) translateY(0.02em);
+    margin-right: 0.04em;
+}
+
+.awg-nav-link-inquire .awg-nav-u {
+    font-family: 'Nighty', cursive;
+    font-size: 1.38rem;
+    transform: rotate(6deg) translate(-0.02em, 0.07em);
+    margin-right: 0.03em;
+}
+
+.awg-nav-link-inquire .awg-nav-i2 {
+    font-family: 'Slibinas', serif;
+    font-size: 1.42rem;
+    transform: rotate(-3deg) translateY(0.04em);
+    margin-right: 0.02em;
+}
+
+.awg-nav-link-inquire .awg-nav-r {
+    font-family: 'Perspect', sans-serif;
+    font-size: 1.44rem;
+    transform: perspective(400px) rotateY(16deg) rotate(2deg);
+    margin-right: 0.03em;
+}
+
+.awg-nav-link-inquire .awg-nav-e {
+    font-family: 'Throwupz', sans-serif;
+    font-size: 1.4rem;
+    transform: rotate(-1deg) translateY(0.03em);
+}
+
+@media (max-width: 768px) {
+    .awg-nav-link {
+        padding: 0.55rem 0.9rem;
+        min-height: 2.85rem;
+        min-width: 4.5rem;
+    }
+
+    .awg-nav-link-inquire {
+        min-width: 6.5rem;
+    }
+
+    .awg-nav-link-home .awg-nav-h { font-size: 1.25rem; }
+    .awg-nav-link-home .awg-nav-o { font-size: 1.18rem; }
+    .awg-nav-link-home .awg-nav-m { font-size: 1.28rem; }
+    .awg-nav-link-home .awg-nav-e { font-size: 1.15rem; }
+    .awg-nav-link-back .awg-nav-b { font-size: 1.22rem; }
+    .awg-nav-link-back .awg-nav-a { font-size: 1.26rem; }
+    .awg-nav-link-back .awg-nav-c { font-size: 1.24rem; }
+    .awg-nav-link-back .awg-nav-k { font-size: 1.3rem; }
+    .awg-nav-link-inquire .awg-nav-i { font-size: 1.2rem; }
+    .awg-nav-link-inquire .awg-nav-n { font-size: 1.26rem; }
+    .awg-nav-link-inquire .awg-nav-q { font-size: 1.28rem; }
+    .awg-nav-link-inquire .awg-nav-u { font-size: 1.18rem; }
+    .awg-nav-link-inquire .awg-nav-i2 { font-size: 1.22rem; }
+    .awg-nav-link-inquire .awg-nav-r { font-size: 1.24rem; }
+    .awg-nav-link-inquire .awg-nav-e { font-size: 1.2rem; }
+
+    .awg-scroll-hint {
+        top: 1.25rem;
+        right: 1.25rem;
+    }
+}
+
+.awg-scroll-hint {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    z-index: 10;
+    width: 32px;
+    height: 42px;
+    pointer-events: none;
+    color: rgba(0, 0, 0, 0.62);
+    transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+
+.awg-scroll-arrow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 28px;
+    height: 38px;
+    transform: translate(-50%, -50%);
+    stroke-width: 3.25;
+    opacity: 0;
+}
+
+.awg-scroll-arrow-1 {
+    animation: awg-scroll-arrow-1 6s linear infinite;
+}
+
+.awg-scroll-arrow-2 {
+    animation: awg-scroll-arrow-2 6s linear infinite;
+}
+
+.awg-scroll-arrow-3 {
+    animation: awg-scroll-arrow-3 6s linear infinite;
+}
+
+.awg-scroll-hint-dismissed {
+    animation: none;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.awg-scroll-hint-dismissed .awg-scroll-arrow {
+    animation: none;
+    opacity: 0;
+}
+
+@keyframes awg-scroll-arrow-1 {
+    0% {
+        opacity: 0;
+    }
+
+    1.67% {
+        opacity: 1;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    11.67% {
+        opacity: 0;
+    }
+
+    33.33%, 100% {
+        opacity: 0;
+    }
+}
+
+@keyframes awg-scroll-arrow-2 {
+    0%, 33.32% {
+        opacity: 0;
+    }
+
+    35% {
+        opacity: 1;
+    }
+
+    43.33% {
+        opacity: 1;
+    }
+
+    45% {
+        opacity: 0;
+    }
+
+    66.66%, 100% {
+        opacity: 0;
+    }
+}
+
+@keyframes awg-scroll-arrow-3 {
+    0%, 66.65% {
+        opacity: 0;
+    }
+
+    68.33% {
+        opacity: 1;
+    }
+
+    76.66% {
+        opacity: 1;
+    }
+
+    78.33% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+.awg-hero {
+    position: relative;
+    width: 100%;
+}
+
+.awg-title {
+    position: absolute;
+    top: 11%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(94vw, 920px);
+    pointer-events: none;
+    z-index: 2;
+    text-align: center;
+}
+
+.awg-row {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    flex-wrap: nowrap;
+    margin: 0;
+    padding: 0;
+    line-height: 0.82;
+}
+
+.awg-row + .awg-row {
+    margin-top: -0.04em;
+}
+
+.awg-char {
+    position: relative;
+    display: inline-block;
+    transform-origin: center bottom;
+    letter-spacing: 0;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* grain overlay on each letter */
+.awg-char::after {
+    content: '';
+    position: absolute;
+    inset: -4%;
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0.42;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 110px 110px;
+}
+
+/* —— ALL —— */
+.awg-a1 {
+    font-family: 'Charcoal', sans-serif;
+    font-size: clamp(3.4rem, 14vw, 8.5rem);
+    color: #45c8e8;
+    transform: rotate(-3deg) translateY(0.06em);
+    margin-right: -0.04em;
+    text-shadow: 0 0 0 #1a8fb0;
+}
+
+.awg-l1 {
+    font-family: 'Nighty', cursive;
+    font-size: clamp(2.8rem, 11vw, 6.8rem);
+    color: #e4007c;
+    transform: rotate(8deg) translate(-0.08em, 0.12em);
+    margin-right: -0.02em;
+}
+
+.awg-l2 {
+    font-family: 'Throwupz', sans-serif;
+    font-size: clamp(3rem, 12vw, 7.4rem);
+    color: #8fd400;
+    transform: rotate(-4deg) translateY(-0.04em);
+}
+
+/* —— WHITE —— */
+.awg-w {
+    font-family: 'Slibinas', serif;
+    font-size: clamp(3rem, 12.5vw, 7.8rem);
+    color: #f5c842;
+    -webkit-text-stroke: 1.5px #e03030;
+    paint-order: stroke fill;
+    transform: rotate(-2deg);
+    margin-right: -0.06em;
+}
+
+.awg-h {
+    font-family: 'Charcoal', sans-serif;
+    font-size: clamp(3.2rem, 13vw, 8rem);
+    color: #ff1a1a;
+    transform: rotate(2deg) translateY(0.02em);
+    margin-right: -0.05em;
+}
+
+.awg-i1 {
+    font-family: 'NeuMurale', serif;
+    font-size: clamp(2.6rem, 10vw, 6.2rem);
+    color: #2434a8;
+    transform: translateY(0.18em);
+    margin-right: 0.02em;
+}
+
+.awg-t {
+    font-family: 'Throwupz', sans-serif;
+    font-size: clamp(2.9rem, 11.5vw, 7.2rem);
+    color: #a020f0;
+    transform: rotate(-5deg) translateY(-0.02em);
+    margin-right: -0.04em;
+}
+
+.awg-e1 {
+    font-family: 'Throwupz', sans-serif;
+    font-size: clamp(2.8rem, 11vw, 7rem);
+    color: #ff5500;
+    transform: rotate(4deg) translateY(0.06em);
+}
+
+/* —— GALLERIES —— */
+.awg-g {
+    font-family: 'Throwupz', sans-serif;
+    font-size: clamp(2rem, 8.2vw, 5.2rem);
+    color: #6ec6e6;
+    transform: rotate(-3deg);
+    margin-right: -0.03em;
+}
+
+.awg-a2 {
+    font-family: 'NeuMurale', serif;
+    font-size: clamp(1.85rem, 7.5vw, 4.8rem);
+    color: #8fd0e8;
+    transform: translateY(0.1em);
+    margin-right: -0.02em;
+}
+
+.awg-l3 {
+    font-family: 'Nighty', cursive;
+    font-size: clamp(1.9rem, 7.8vw, 5rem);
+    color: #ff4da6;
+    transform: rotate(6deg) translateY(0.14em);
+    margin-right: -0.04em;
+}
+
+.awg-l4 {
+    font-family: 'Slibinas', serif;
+    font-size: clamp(2rem, 8vw, 5.1rem);
+    color: #e8c547;
+    transform: rotate(-2deg);
+    margin-right: -0.03em;
+}
+
+.awg-e2 {
+    font-family: 'Perspect', sans-serif;
+    font-size: clamp(2.1rem, 8.5vw, 5.4rem);
+    color: #ff2222;
+    transform: perspective(500px) rotateY(-28deg) rotate(-2deg);
+    margin-right: -0.02em;
+}
+
+.awg-r {
+    font-family: 'Throwupz', sans-serif;
+    font-size: clamp(1.95rem, 8vw, 5rem);
+    color: #98e088;
+    transform: rotate(3deg) translateY(-0.04em);
+    margin-right: -0.03em;
+}
+
+.awg-i2 {
+    font-family: 'NeuMurale', serif;
+    font-size: clamp(1.8rem, 7.2vw, 4.6rem);
+    color: #3050c8;
+    transform: translateY(0.12em);
+    margin-right: 0.01em;
+}
+
+.awg-e3 {
+    font-family: 'Charcoal', sans-serif;
+    font-size: clamp(1.9rem, 7.8vw, 5rem);
+    color: #f0d030;
+    -webkit-text-stroke: 2px #111;
+    paint-order: stroke fill;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.15);
+    transform: rotate(-1deg);
+    margin-right: -0.02em;
+}
+
+.awg-s {
+    font-family: 'Throwupz', sans-serif;
+    font-size: clamp(2rem, 8.2vw, 5.2rem);
+    color: #c026d3;
+    transform: rotate(-6deg) translateY(0.05em);
+}
+
+@media (max-width: 768px) {
+    .awg-title {
+        top: 9%;
+        width: 96vw;
+    }
+
+    .awg-row {
+        line-height: 0.78;
+    }
+}
+
+@media (max-width: 480px) {
+    .awg-title {
+        top: 7%;
+    }
+}

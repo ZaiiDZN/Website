@@ -30,20 +30,19 @@
         </div>
     </main>
 
-    <div class="construction-popup" id="unavailable-popup" aria-hidden="true">
-        <div class="construction-popup-content">
-            <p>sorry, page not available</p>
-        </div>
-    </div>
-
     <script src="script.js"></script>
     <script>
         const projectUrls = {
+            'All White Galleries (Collection, 2026)': 'all-white-galleries.html',
             'I Think Narcissus Fell In (Collection, 2025)': 'i-think-narcissus-fell-in.html',
             'Archive (Collection, 2023)': 'archive-project.html'
         };
 
         const partialItalicTitles = {
+            'All White Galleries (Collection, 2026)': {
+                italic: 'All White Galleries',
+                regular: ' (Collection, 2026)'
+            },
             'I Think Narcissus Fell In (Collection, 2025)': {
                 italic: 'I Think Narcissus Fell In',
                 regular: ' (Collection, 2025)'
@@ -53,39 +52,6 @@
                 regular: ' (Collection, 2023)'
             }
         };
-
-        function showUnavailablePopup() {
-            const popup = document.getElementById('unavailable-popup');
-            const content = popup?.querySelector('.construction-popup-content');
-            if (!popup || !content) return;
-
-            popup.classList.add('active');
-            popup.setAttribute('aria-hidden', 'false');
-            content.style.animation = 'none';
-            void content.offsetWidth;
-            content.style.animation = 'constructionPopupShow 0.25s ease forwards, constructionPopupHide 0.25s ease 2s forwards';
-
-            setTimeout(() => {
-                popup.classList.remove('active');
-                popup.setAttribute('aria-hidden', 'true');
-                content.style.animation = 'none';
-            }, 2300);
-        }
-
-        function createComingSoonItem() {
-            const li = document.createElement('li');
-            const button = document.createElement('button');
-            button.type = 'button';
-            button.className = 'project-link project-link-button';
-
-            const italic = document.createElement('i');
-            italic.textContent = 'Coming Soon - Aug 2026';
-            button.appendChild(italic);
-
-            button.addEventListener('click', showUnavailablePopup);
-            li.appendChild(button);
-            return li;
-        }
 
         function createListItem(projectName) {
             const li = document.createElement('li');
@@ -139,11 +105,8 @@
 
             try {
                 await loadList('images/collections-list.txt', collectionsList);
-                collectionsList.insertBefore(createComingSoonItem(), collectionsList.firstChild);
             } catch (error) {
                 console.error('Error loading projects page:', error);
-                collectionsList.innerHTML = '';
-                collectionsList.appendChild(createComingSoonItem());
             }
         }
 

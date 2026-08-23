@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All White Galleries - zaivion hampden</title>
+    <link rel="stylesheet" href="awg.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="awg-page">
+    <main class="project-page all-white-galleries-page">
+        <div class="awg-nav awg-nav-top">
+            <a href="index.html" class="home-link-header awg-nav-link awg-nav-link-home">
+                <span class="awg-nav-char awg-nav-h">h</span><span class="awg-nav-char awg-nav-o">o</span><span class="awg-nav-char awg-nav-m">m</span><span class="awg-nav-char awg-nav-e">e</span>
+            </a>
+            <a href="projects.html" class="back-link-header awg-nav-link awg-nav-link-back">
+                <span class="awg-nav-char awg-nav-b">b</span><span class="awg-nav-char awg-nav-a">a</span><span class="awg-nav-char awg-nav-c">c</span><span class="awg-nav-char awg-nav-k">k</span>
+            </a>
+        </div>
+
+        <div class="awg-scroll-hint" id="awg-scroll-hint" aria-hidden="true">
+            <svg class="awg-scroll-arrow awg-scroll-arrow-1" width="28" height="38" viewBox="0 0 24 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <line x1="12" y1="4" x2="12" y2="19" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                <path d="M6 19L12 25L18 19" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <svg class="awg-scroll-arrow awg-scroll-arrow-2" width="28" height="38" viewBox="0 0 24 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M6 10L12 16L18 10" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M6 17L12 23L18 17" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <svg class="awg-scroll-arrow awg-scroll-arrow-3" width="28" height="38" viewBox="0 0 24 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M11 4 C13 8 13 12 12 16 C11 20 13 23 12 26" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
+                <path d="M5 20 L11 28 L13 24 L12 28 L19 21" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M8 24 L11 27" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" opacity="0.55"/>
+            </svg>
+        </div>
+
+        <div class="awg-hero">
+            <img
+                class="awg-cover-image"
+                src="images/all-white-galleries/cover.png?v=3"
+                alt="All White Galleries"
+            >
+
+            <section id="awg-pieces" class="awg-gallery" aria-label="Collection pieces">
+                <!-- Pieces loaded from images/all-white-galleries/{n}/ -->
+            </section>
+        </div>
+    </main>
+
+    <div class="piece-image-zoom-overlay" id="awg-image-overlay">
+        <div class="piece-image-zoom-backdrop" id="awg-image-overlay-backdrop"></div>
+        <div class="piece-image-zoom-content awg-image-overlay-content">
+            <button class="carousel-arrow carousel-arrow-left" id="awg-carousel-left" aria-label="Previous">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+            <div class="piece-image-zoom-media" id="awg-image-overlay-media"></div>
+            <button class="carousel-arrow carousel-arrow-right" id="awg-carousel-right" aria-label="Next">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
