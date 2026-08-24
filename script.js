@@ -288,15 +288,40 @@ function buildInquireContactUrl(subject, returnTo) {
     return `contact.html?${params.toString()}`;
 }
 
-function isSafeReturnPath(path) {
+function getSafeReturnHref(path) {
     if (!path || typeof path !== 'string') {
-        return false;
+        return null;
     }
 
     const trimmed = path.trim();
-    return !trimmed.includes('://')
-        && !trimmed.startsWith('//')
-        && !trimmed.toLowerCase().startsWith('javascript:');
+    // Reject scheme tricks (`https:evil.example`, `javascript:`, `data:`) and
+    // backslash host bypasses that the HTML URL parser treats as off-site.
+    if (!trimmed || /[\\:]/.test(trimmed) || trimmed.includes('..')) {
+        return null;
+    }
+
+    try {
+        const resolved = new URL(trimmed, window.location.href);
+        const pageName = resolved.pathname.split('/').pop();
+        const isSameOriginPage = resolved.origin === window.location.origin
+            && (resolved.protocol === 'http:' || resolved.protocol === 'https:')
+            && resolved.pathname === `/${pageName}`
+            && /^[A-Za-z0-9._-]+\.html$/.test(pageName)
+            && !resolved.username
+            && !resolved.password;
+
+        if (!isSameOriginPage) {
+            return null;
+        }
+
+        return `${resolved.pathname}${resolved.search}${resolved.hash}`;
+    } catch {
+        return null;
+    }
+}
+
+function isSafeReturnPath(path) {
+    return getSafeReturnHref(path) !== null;
 }
 
 function updateModalInquireLink() {
@@ -324,12 +349,13 @@ function initContactInquireBack() {
     if (!backLink) return;
 
     const returnTo = new URLSearchParams(window.location.search).get('return');
-    if (!returnTo || !isSafeReturnPath(returnTo)) {
+    const safeHref = getSafeReturnHref(returnTo);
+    if (!safeHref) {
         backLink.hidden = true;
         return;
     }
 
-    backLink.href = returnTo;
+    backLink.href = safeHref;
     backLink.hidden = false;
 }
 
