@@ -302,6 +302,7 @@
     <!-- Extras Overlay (for extras media) -->
     <div class="extras-overlay" id="extras-overlay">
         <div class="extras-overlay-backdrop" id="extras-overlay-backdrop"></div>
+        <button class="overlay-close-btn" id="extras-overlay-close" aria-label="Close overlay">×</button>
         <div class="extras-overlay-content">
             <div class="extras-overlay-media" id="extras-overlay-media">
                 <!-- Media will be loaded here -->
@@ -312,6 +313,7 @@
     <!-- Image Overlay (for main piece images and secondary angles) -->
     <div class="image-overlay" id="image-overlay">
         <div class="image-overlay-backdrop" id="image-overlay-backdrop"></div>
+        <button class="overlay-close-btn" id="image-overlay-close" aria-label="Close overlay">×</button>
         <div class="image-overlay-content">
             <div class="image-overlay-grid" id="image-overlay-grid">
                 <div class="overlay-image-cell">
@@ -326,6 +328,7 @@
     <!-- Thumbnail Overlay (for design/video/audio thumbnails) -->
     <div class="thumbnail-overlay" id="thumbnail-overlay">
         <div class="thumbnail-overlay-backdrop" id="thumbnail-overlay-backdrop"></div>
+        <button class="overlay-close-btn" id="thumbnail-overlay-close" aria-label="Close overlay">×</button>
         <div class="thumbnail-overlay-content">
             <button class="carousel-arrow carousel-arrow-left" id="thumbnail-carousel-left" aria-label="Previous">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -346,6 +349,7 @@
     <!-- Piece Image Zoom Overlay (for main images 1.jpg, 2.jpg, 3.jpg) -->
     <div class="piece-image-zoom-overlay" id="piece-image-zoom-overlay">
         <div class="piece-image-zoom-backdrop" id="piece-image-zoom-backdrop"></div>
+        <button class="overlay-close-btn" id="piece-image-zoom-close" aria-label="Close overlay">×</button>
         <div class="piece-image-zoom-content">
             <button class="carousel-arrow carousel-arrow-left" id="main-image-carousel-left" aria-label="Previous">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -659,6 +663,11 @@
         if (thumbnailBackdrop) {
             thumbnailBackdrop.addEventListener('click', closeThumbnailOverlay);
         }
+
+        document.getElementById('thumbnail-overlay-close')?.addEventListener('click', function(e) {
+            e.stopPropagation();
+            closeThumbnailOverlay();
+        });
         
         // Close when clicking on the content area (but not on arrows or play buttons)
         if (thumbnailContent) {
@@ -1034,6 +1043,11 @@
             imageOverlayBackdrop.addEventListener('click', closeImageOverlay);
         }
 
+        document.getElementById('image-overlay-close')?.addEventListener('click', function(e) {
+            e.stopPropagation();
+            closeImageOverlay();
+        });
+
         // Close when clicking on the overlay content area (but not the image grid)
         const imageOverlayContent = document.querySelector('.image-overlay-content');
         if (imageOverlayContent) {
@@ -1195,6 +1209,11 @@
         if (pieceZoomBackdrop) {
             pieceZoomBackdrop.addEventListener('click', closePieceZoomOverlay);
         }
+
+        document.getElementById('piece-image-zoom-close')?.addEventListener('click', function(e) {
+            e.stopPropagation();
+            closePieceZoomOverlay();
+        });
         
         if (pieceZoomContent) {
             pieceZoomContent.addEventListener('click', function(e) {
@@ -1572,8 +1591,60 @@
             navigateExtrasCarousel(-1); // Reversed
         });
 
+        // Touch swiping for extras section carousel
+        let extrasTouchStartX = 0;
+        let extrasTouchStartY = 0;
+        const extrasWrapperEl = document.querySelector('.extras-carousel-wrapper');
+        if (extrasWrapperEl) {
+            extrasWrapperEl.addEventListener('touchstart', (e) => {
+                extrasTouchStartX = e.touches[0].clientX;
+                extrasTouchStartY = e.touches[0].clientY;
+            }, { passive: true });
+
+            extrasWrapperEl.addEventListener('touchend', (e) => {
+                const diffX = e.changedTouches[0].clientX - extrasTouchStartX;
+                const diffY = e.changedTouches[0].clientY - extrasTouchStartY;
+                if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
+                    if (diffX < 0) {
+                        navigateExtrasCarousel(-1);
+                    } else {
+                        navigateExtrasCarousel(1);
+                    }
+                }
+            }, { passive: true });
+        }
+
+        // Touch swiping for thumbnail & piece zoom overlay
+        let overlayTouchStartX = 0;
+        let overlayTouchStartY = 0;
+        [document.getElementById('thumbnail-overlay'), document.getElementById('piece-image-zoom-overlay')].forEach(overlayEl => {
+            if (!overlayEl) return;
+            overlayEl.addEventListener('touchstart', (e) => {
+                if (!overlayEl.classList.contains('active')) return;
+                overlayTouchStartX = e.touches[0].clientX;
+                overlayTouchStartY = e.touches[0].clientY;
+            }, { passive: true });
+
+            overlayEl.addEventListener('touchend', (e) => {
+                if (!overlayEl.classList.contains('active')) return;
+                const diffX = e.changedTouches[0].clientX - overlayTouchStartX;
+                const diffY = e.changedTouches[0].clientY - overlayTouchStartY;
+                if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
+                    if (diffX < 0) {
+                        navigateCarousel(1);
+                    } else {
+                        navigateCarousel(-1);
+                    }
+                }
+            }, { passive: true });
+        });
+
         // Close extras overlay
         document.getElementById('extras-overlay-backdrop')?.addEventListener('click', closeExtrasOverlay);
+        document.getElementById('extras-overlay-close')?.addEventListener('click', function(e) {
+            e.stopPropagation();
+            closeExtrasOverlay();
+        });
         document.querySelector('.extras-overlay-content')?.addEventListener('click', function(e) {
             if (e.target === this || e.target.closest('.extras-overlay-media')) {
                 closeExtrasOverlay();

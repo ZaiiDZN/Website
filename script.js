@@ -47,6 +47,7 @@ const observer = new IntersectionObserver((entries) => {
 const pieceModal = document.getElementById('piece-modal');
 const modalBackdrop = document.getElementById('modal-backdrop');
 const modalClose = document.getElementById('modal-close');
+const modalClose = document.getElementById('modal-close');
 
 // ============================================================================
 // NOTABLE WORK GALLERY SYSTEM (FULLY DYNAMIC)
@@ -112,6 +113,7 @@ document.addEventListener('click', function(e) {
 // Close notable image overlay
 const notableImageOverlay = document.getElementById('notable-image-overlay');
 const notableImageOverlayBackdrop = document.getElementById('notable-image-overlay-backdrop');
+const notableImageOverlayClose = document.getElementById('notable-image-overlay-close');
 const notableImageOverlayImage = document.getElementById('notable-image-overlay-image');
 
 function closeNotableImageOverlay() {
@@ -124,6 +126,13 @@ function closeNotableImageOverlay() {
 
 if (notableImageOverlayBackdrop) {
     notableImageOverlayBackdrop.addEventListener('click', closeNotableImageOverlay);
+}
+
+if (notableImageOverlayClose) {
+    notableImageOverlayClose.addEventListener('click', function(e) {
+        e.stopPropagation();
+        closeNotableImageOverlay();
+    });
 }
 
 // Close when clicking on the overlay content (but not the image itself)
@@ -154,11 +163,19 @@ function closePieceModal() {
     if (pieceModal) {
         pieceModal.classList.remove('active');
         document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
     }
 }
 
 if (modalBackdrop) {
     modalBackdrop.addEventListener('click', closePieceModal);
+}
+
+if (modalClose) {
+    modalClose.addEventListener('click', function(e) {
+        e.stopPropagation();
+        closePieceModal();
+    });
 }
 
 // Close when clicking on modal content (but not the content itself)
@@ -347,6 +364,7 @@ function ensureShowcaseOverlay() {
     overlay.setAttribute('aria-hidden', 'true');
     overlay.innerHTML = `
         <div class="showcase-overlay-backdrop" id="showcase-overlay-backdrop"></div>
+        <button class="overlay-close-btn" id="showcase-overlay-close" aria-label="Close overlay">×</button>
         <div class="showcase-overlay-content">
             <img
                 src="${SHOWCASE_FLYER_SRC}"
@@ -393,7 +411,7 @@ function initShowcaseOverlay() {
     });
 
     document.addEventListener('click', (event) => {
-        if (event.target.id === 'showcase-overlay-backdrop') {
+        if (event.target.id === 'showcase-overlay-backdrop' || event.target.id === 'showcase-overlay-close' || event.target.closest('#showcase-overlay-close')) {
             closeShowcaseOverlay();
         }
     });
@@ -716,6 +734,30 @@ function attachModalImageArrows(modalMainImage, totalImages) {
 
     modalMainImage.appendChild(leftArrow);
     modalMainImage.appendChild(rightArrow);
+
+    if (!modalMainImage.hasAttribute('data-swipe-bound')) {
+        modalMainImage.setAttribute('data-swipe-bound', 'true');
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        modalMainImage.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+
+        modalMainImage.addEventListener('touchend', (e) => {
+            const diffX = e.changedTouches[0].clientX - touchStartX;
+            const diffY = e.changedTouches[0].clientY - touchStartY;
+            if (Math.abs(diffX) > 35 && Math.abs(diffX) > Math.abs(diffY)) {
+                if (modalCarouselAnimating) return;
+                if (diffX < 0) {
+                    navigateModalImage(1);
+                } else {
+                    navigateModalImage(-1);
+                }
+            }
+        }, { passive: true });
+    }
 }
 
 // Navigate rotating image carousel in modal (infinite wrap)
@@ -945,14 +987,20 @@ async function openPieceModal(folderId) {
     }
     
     if (modalContent) {
-        modalContent.style.maxHeight = '96vh';
-        modalContent.style.minHeight = 'min(84vh, 760px)';
+        if (window.innerWidth <= 768) {
+            modalContent.style.maxHeight = '90vh';
+            modalContent.style.minHeight = 'auto';
+        } else {
+            modalContent.style.maxHeight = '92vh';
+            modalContent.style.minHeight = 'min(82vh, 740px)';
+        }
         modalContent.style.overflow = 'hidden';
     }
     
     // Show modal
     pieceModal.classList.add('active');
     document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
 }
 
 // Home button - show overlay again (for other pages that might need it)
@@ -1932,11 +1980,17 @@ function initAwgImageOverlay() {
     const media = document.getElementById('awg-image-overlay-media');
     const leftArrow = document.getElementById('awg-carousel-left');
     const rightArrow = document.getElementById('awg-carousel-right');
+    const closeBtn = document.getElementById('awg-image-overlay-close');
 
     function closeAwgOverlay() {
         overlay.classList.remove('active');
         document.documentElement.style.overflow = '';
     }
+
+    closeBtn?.addEventListener('click', (event) => {
+        event.stopPropagation();
+        closeAwgOverlay();
+    });
 
     function updateAwgCarouselArrows() {
         const { images, index } = awgImageCarousel;
@@ -2009,6 +2063,31 @@ function initAwgImageOverlay() {
         event.stopPropagation();
         displayAwgImage(awgImageCarousel.index + 1);
     });
+
+    let awgTouchStartX = 0;
+    let awgTouchStartY = 0;
+
+    overlay.addEventListener('touchstart', (event) => {
+        if (!overlay.classList.contains('active')) return;
+        const touch = event.touches[0];
+        awgTouchStartX = touch.clientX;
+        awgTouchStartY = touch.clientY;
+    }, { passive: true });
+
+    overlay.addEventListener('touchend', (event) => {
+        if (!overlay.classList.contains('active')) return;
+        const touch = event.changedTouches[0];
+        const diffX = touch.clientX - awgTouchStartX;
+        const diffY = touch.clientY - awgTouchStartY;
+
+        if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
+            if (diffX < 0) {
+                displayAwgImage(awgImageCarousel.index + 1);
+            } else {
+                displayAwgImage(awgImageCarousel.index - 1);
+            }
+        }
+    }, { passive: true });
 
     document.addEventListener('keydown', (event) => {
         if (!overlay.classList.contains('active')) {

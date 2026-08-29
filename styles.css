@@ -857,14 +857,14 @@ body.showcase-open .all-white-galleries-page {
     position: relative;
     z-index: 1001;
     background-color: white;
-    max-width: min(1200px, 95vw);
-    max-height: 96vh;
-    min-height: min(84vh, 760px);
-    width: 90%;
+    max-width: min(1040px, 90vw);
+    max-height: 88vh;
+    min-height: min(78vh, 680px);
+    width: 86%;
     overflow: hidden;
     border-radius: 10px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    padding: 1.75rem 1.85rem 1.5rem;
+    padding: 1.5rem 1.65rem 1.35rem;
     transform: scale(0.9);
     transition: transform 0.3s ease;
     cursor: pointer;
@@ -903,7 +903,35 @@ body.showcase-open .all-white-galleries-page {
     transform: scale(1);
 }
 
-/* Modal close button removed - clicking outside closes */
+.modal-close {
+    position: absolute;
+    top: 0.85rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    color: #000000;
+    font-size: 1.25rem;
+    line-height: 1;
+    font-weight: 300;
+    cursor: pointer;
+    z-index: 1002;
+    padding: 0.35rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.55;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.modal-close:hover {
+    opacity: 1;
+    transform: scale(1.15);
+}
+
+.modal-info-column {
+    padding-right: 1.5rem;
+}
 
 .modal-columns {
     display: grid;
@@ -1525,22 +1553,58 @@ body.awg-page .all-white-galleries-page {
 
 @media (max-width: 768px) {
     .awg-gallery {
-        padding: 0 1.25rem 1.25rem;
+        padding: 0 0 1.25rem;
+    }
+
+    .awg-piece {
+        padding: 1.25rem 0 1.5rem;
+        max-width: 100vw;
+        overflow-x: hidden;
+    }
+
+    .awg-piece-title,
+    .awg-piece-info {
+        padding: 0 1.25rem;
     }
 
     .awg-piece-images {
-        flex-wrap: wrap;
-        justify-content: center;
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: safe center;
+        align-items: center;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory;
+        scroll-padding: 0 1.25rem;
+        gap: 0.85rem;
+        padding: 0.5rem 1.25rem 0.85rem;
+        margin-bottom: 0.5rem;
+        width: 100%;
+        max-width: 100vw;
+        box-sizing: border-box;
+        scrollbar-width: none;
+    }
+
+    .awg-piece-images::-webkit-scrollbar {
+        display: none;
     }
 
     .awg-piece-images img {
-        max-width: min(280px, 85vw);
-        max-height: 380px;
+        flex: 0 0 auto;
+        scroll-snap-align: center;
+        max-width: min(300px, 78vw);
+        max-height: min(440px, 54vh);
+        width: auto;
+        height: auto;
+    }
+
+    .awg-piece-painting .awg-piece-images {
+        justify-content: center;
     }
 
     .awg-piece-painting .awg-piece-images img {
-        max-width: min(340px, 92vw);
-        max-height: 420px;
+        max-width: min(340px, 88vw);
+        max-height: min(480px, 60vh);
     }
 
     .awg-fin-section {
@@ -1554,24 +1618,41 @@ body.awg-page .all-white-galleries-page {
 
     .awg-collection-description,
     .awg-collection-spotify {
-        max-width: calc(100vw - 2.5rem - clamp(0.5rem, 2vw, 0.75rem) - 2rem);
+        max-width: calc(100vw - 3.5rem);
+        padding-right: 1.5rem;
     }
 
     .awg-collection-description {
-        font-size: 1.25rem;
+        font-size: 1.05rem;
+        line-height: 1.5;
     }
 
     .awg-collection-spotify {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
     }
 
     .all-white-galleries-page .awg-nav-top {
-        top: 1rem;
-        left: 1rem;
+        top: 0.75rem;
+        left: 0.75rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0;
     }
 
     .all-white-galleries-page .awg-nav-top .home-link-header,
-    .all-white-galleries-page .awg-nav-top .back-link-header,
+    .all-white-galleries-page .awg-nav-top .back-link-header {
+        position: static;
+        top: auto;
+        left: auto;
+        padding: 0.35rem 0.65rem;
+        min-height: auto;
+        min-width: auto;
+    }
+
+    .all-white-galleries-page .awg-nav-top .back-link-header {
+        margin-top: -0.15rem;
+    }
+
     .all-white-galleries-page .awg-nav-bottom .home-link-header,
     .all-white-galleries-page .awg-nav-bottom .back-link-header,
     .all-white-galleries-page .awg-nav-bottom .awg-nav-link-inquire {
@@ -2382,15 +2463,16 @@ body.awg-page .all-white-galleries-page {
     gap: 0.75rem;
     flex-wrap: nowrap;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     border-radius: 4px;
-    padding: 0;
+    padding: 0.25rem 0;
 }
 
 .piece-media-row .mixed-media-thumbnails,
 .piece-image-column .mixed-media-thumbnails {
     display: flex;
     gap: 0.75rem;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
 }
 
@@ -2690,6 +2772,37 @@ body:has(.piece-modal.active) .project-page {
 }
 
 /* Notable image overlay close button removed - clicking outside closes */
+
+/* Fullscreen overlay close button (white X in top right corner of entire page) */
+.overlay-close-btn {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.75rem;
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 2rem;
+    line-height: 1;
+    font-weight: 300;
+    cursor: pointer;
+    z-index: 10005;
+    padding: 0.5rem;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.8;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.overlay-close-btn:hover {
+    opacity: 1;
+    transform: scale(1.15);
+}
 
 /* Piece Image Zoom Overlay */
 .piece-image-zoom-overlay {
@@ -3855,24 +3968,36 @@ html {
         z-index: 10000;
     }
     
-    /* Fix modal on mobile - fit screen properly */
+    /* Fix modal on mobile - fit screen properly with border padding so backdrop is clickable */
     .modal-content {
-        width: 100%;
-        max-width: 100vw;
-        max-height: 100vh;
-        min-height: 100vh;
-        padding: 1rem 1rem 3rem;
-        margin: 0;
-        border-radius: 0;
+        width: 88%;
+        max-width: 88vw;
+        max-height: 84vh;
+        min-height: auto;
+        padding: 1.25rem 1.15rem 2.75rem;
+        margin: auto;
+        border-radius: 8px;
         box-sizing: border-box;
         overflow: hidden;
     }
 
+    .modal-close {
+        top: 0.6rem;
+        right: 0.75rem;
+        font-size: 1.2rem;
+        padding: 0.4rem;
+        opacity: 0.65;
+    }
+
+    .modal-info-column {
+        padding-right: 1.75rem;
+    }
+
     .modal-inquire-link {
-        bottom: 1rem;
-        left: 1rem;
+        bottom: 0.85rem;
+        left: 1.15rem;
         font-size: 0.9rem;
-        min-height: 44px;
+        min-height: 38px;
         display: inline-flex;
         align-items: center;
     }
@@ -3880,9 +4005,46 @@ html {
     .modal-columns {
         max-width: 100%;
         overflow-x: hidden;
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .modal-title {
+        font-size: 1.2rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .modal-details {
+        font-size: 0.9rem;
+    }
+
+    .modal-description {
+        font-size: 0.85rem;
+        line-height: 1.3;
+        margin-top: 0.25rem;
+    }
+
+    .modal-carousel-img {
+        max-height: 36vh;
+    }
+
+    .modal-supplement-gallery {
+        gap: 0.4rem;
+        margin-top: 0.4rem;
+    }
+
+    .modal-supplement-image {
+        height: clamp(65px, 11vh, 95px);
     }
     
     /* Fix all overlays on mobile to fit screen */
+    .overlay-close-btn {
+        top: 0.85rem;
+        right: 0.85rem;
+        font-size: 1.65rem;
+        opacity: 0.9;
+    }
+
     .notable-image-overlay-content,
     .image-overlay-content,
     .thumbnail-overlay-content,
@@ -4007,6 +4169,12 @@ html {
     .extras-carousel-container {
         padding: 0 50px;
     }
+
+    .extras-carousel-fade-left,
+    .extras-carousel-fade-right {
+        width: 45px;
+        opacity: 0.7;
+    }
     
     .extras-carousel-arrow {
         width: 40px;
@@ -4034,8 +4202,10 @@ html {
     }
     
     .modal-content {
-        width: 98%;
-        padding: 0.75rem;
+        width: 88%;
+        max-width: 88vw;
+        max-height: 84vh;
+        padding: 1rem 1rem 2.5rem;
     }
     
     .two-column {

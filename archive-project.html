@@ -128,6 +128,7 @@
     <!-- Image Overlay -->
     <div class="image-overlay" id="image-overlay">
         <div class="image-overlay-backdrop" id="image-overlay-backdrop"></div>
+        <button class="overlay-close-btn" id="image-overlay-close" aria-label="Close overlay">×</button>
         <div class="image-overlay-content">
             <div class="image-overlay-image" id="image-overlay-image">
                 <div class="image-overlay-placeholder">
@@ -140,6 +141,7 @@
     <!-- Archive Piece Overlay (Old Paper Style) -->
     <div class="archive-piece-overlay" id="archive-piece-overlay">
         <div class="archive-piece-backdrop" id="archive-piece-backdrop"></div>
+        <button class="overlay-close-btn" id="archive-piece-overlay-close" aria-label="Close overlay">×</button>
         <div class="archive-piece-paper">
             <div class="archive-piece-photo-container">
                 <div class="paper-clip">
@@ -208,6 +210,11 @@
         if (imageOverlayBackdrop) {
             imageOverlayBackdrop.addEventListener('click', closeImageOverlay);
         }
+
+        document.getElementById('image-overlay-close')?.addEventListener('click', function(e) {
+            e.stopPropagation();
+            closeImageOverlay();
+        });
 
         // Close when clicking on the overlay content (but not the image itself)
         if (imageOverlayImage) {
@@ -322,6 +329,11 @@
         if (archivePieceBackdrop) {
             archivePieceBackdrop.addEventListener('click', closeArchivePieceOverlay);
         }
+
+        document.getElementById('archive-piece-overlay-close')?.addEventListener('click', function(e) {
+            e.stopPropagation();
+            closeArchivePieceOverlay();
+        });
 
         // Close when clicking on the paper (but not the content)
         const archivePiecePaper = document.querySelector('.archive-piece-paper');
