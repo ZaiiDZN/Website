@@ -47,7 +47,6 @@ const observer = new IntersectionObserver((entries) => {
 const pieceModal = document.getElementById('piece-modal');
 const modalBackdrop = document.getElementById('modal-backdrop');
 const modalClose = document.getElementById('modal-close');
-const modalClose = document.getElementById('modal-close');
 
 // ============================================================================
 // NOTABLE WORK GALLERY SYSTEM (FULLY DYNAMIC)
