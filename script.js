@@ -349,12 +349,27 @@ function initContactInquireBack() {
     backLink.hidden = false;
 }
 
-const SHOWCASE_FLYER_SRC = 'images/home/showcase-flyer.png';
+const SHOWCASE_CAROUSEL_ARROW_SVG = {
+    left: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    right: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+};
+
+const SHOWCASE_IMAGE_COUNT = 8;
+const SHOWCASE_IMAGE_PATHS = Array.from(
+    { length: SHOWCASE_IMAGE_COUNT },
+    (_, index) => `images/home/awg-showcase/${index + 1}.png`
+);
+
+let showcaseCarousel = { index: 0 };
 
 function ensureShowcaseOverlay() {
     let overlay = document.getElementById('showcase-overlay');
-    if (overlay) {
+    if (overlay && overlay.querySelector('#showcase-overlay-media')) {
         return overlay;
+    }
+
+    if (overlay) {
+        overlay.remove();
     }
 
     overlay = document.createElement('div');
@@ -365,22 +380,53 @@ function ensureShowcaseOverlay() {
         <div class="showcase-overlay-backdrop" id="showcase-overlay-backdrop"></div>
         <button class="overlay-close-btn" id="showcase-overlay-close" aria-label="Close overlay">×</button>
         <div class="showcase-overlay-content">
-            <img
-                src="${SHOWCASE_FLYER_SRC}"
-                alt="All White Galleries showcase at Silks Building, Friday August 28 at 8:30 PM, 37-24 24th St Astoria NY"
-                class="showcase-overlay-image"
-            >
+            <button class="carousel-arrow carousel-arrow-left" id="showcase-carousel-left" aria-label="Previous">
+                ${SHOWCASE_CAROUSEL_ARROW_SVG.left}
+            </button>
+            <div class="showcase-overlay-media" id="showcase-overlay-media"></div>
+            <button class="carousel-arrow carousel-arrow-right" id="showcase-carousel-right" aria-label="Next">
+                ${SHOWCASE_CAROUSEL_ARROW_SVG.right}
+            </button>
         </div>
     `;
     document.body.appendChild(overlay);
     return overlay;
 }
 
+function updateShowcaseCarouselArrows() {
+    const leftArrow = document.getElementById('showcase-carousel-left');
+    const rightArrow = document.getElementById('showcase-carousel-right');
+    const showArrows = SHOWCASE_IMAGE_PATHS.length > 1;
+
+    if (leftArrow) {
+        leftArrow.classList.toggle('hidden', !showArrows || showcaseCarousel.index === 0);
+    }
+    if (rightArrow) {
+        rightArrow.classList.toggle('hidden', !showArrows || showcaseCarousel.index === SHOWCASE_IMAGE_PATHS.length - 1);
+    }
+}
+
+function displayShowcaseImage(index) {
+    const media = document.getElementById('showcase-overlay-media');
+    if (!media || index < 0 || index >= SHOWCASE_IMAGE_PATHS.length) {
+        return;
+    }
+
+    showcaseCarousel.index = index;
+    const src = SHOWCASE_IMAGE_PATHS[index];
+    media.innerHTML = `<img src="${src}" alt="All White Galleries showcase photo ${index + 1}" class="showcase-overlay-image">`;
+    updateShowcaseCarouselArrows();
+}
+
 function openShowcaseOverlay() {
     const overlay = ensureShowcaseOverlay();
+    showcaseCarousel.index = 0;
+    displayShowcaseImage(0);
     overlay.classList.add('active');
     overlay.setAttribute('aria-hidden', 'false');
     document.body.classList.add('showcase-open');
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
 }
 
 function closeShowcaseOverlay() {
@@ -392,6 +438,8 @@ function closeShowcaseOverlay() {
     overlay.classList.remove('active');
     overlay.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('showcase-open');
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
 }
 
 function initShowcaseOverlay() {
@@ -400,7 +448,10 @@ function initShowcaseOverlay() {
     }
     initShowcaseOverlay.initialized = true;
 
-    ensureShowcaseOverlay();
+    const overlay = ensureShowcaseOverlay();
+    const leftArrow = document.getElementById('showcase-carousel-left');
+    const rightArrow = document.getElementById('showcase-carousel-right');
+    const closeBtn = document.getElementById('showcase-overlay-close');
 
     document.addEventListener('click', (event) => {
         if (event.target.closest('.showcase-link')) {
@@ -409,16 +460,81 @@ function initShowcaseOverlay() {
         }
     });
 
-    document.addEventListener('click', (event) => {
-        if (event.target.id === 'showcase-overlay-backdrop' || event.target.id === 'showcase-overlay-close' || event.target.closest('#showcase-overlay-close')) {
-            closeShowcaseOverlay();
+    overlay.addEventListener('click', (event) => {
+        if (!overlay.classList.contains('active')) {
+            return;
         }
+
+        if (
+            event.target.id === 'showcase-overlay-backdrop'
+            || event.target.id === 'showcase-overlay-close'
+            || event.target.closest('#showcase-overlay-close')
+        ) {
+            closeShowcaseOverlay();
+            return;
+        }
+
+        if (event.target.closest('.showcase-overlay-image') || event.target.closest('.carousel-arrow')) {
+            return;
+        }
+
+        closeShowcaseOverlay();
     });
 
+    closeBtn?.addEventListener('click', (event) => {
+        event.stopPropagation();
+        closeShowcaseOverlay();
+    });
+
+    leftArrow?.addEventListener('click', (event) => {
+        event.stopPropagation();
+        displayShowcaseImage(showcaseCarousel.index - 1);
+    });
+
+    rightArrow?.addEventListener('click', (event) => {
+        event.stopPropagation();
+        displayShowcaseImage(showcaseCarousel.index + 1);
+    });
+
+    let showcaseTouchStartX = 0;
+    let showcaseTouchStartY = 0;
+
+    overlay.addEventListener('touchstart', (event) => {
+        if (!overlay.classList.contains('active')) return;
+        const touch = event.touches[0];
+        showcaseTouchStartX = touch.clientX;
+        showcaseTouchStartY = touch.clientY;
+    }, { passive: true });
+
+    overlay.addEventListener('touchend', (event) => {
+        if (!overlay.classList.contains('active')) return;
+        const touch = event.changedTouches[0];
+        const diffX = touch.clientX - showcaseTouchStartX;
+        const diffY = touch.clientY - showcaseTouchStartY;
+
+        if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
+            if (diffX < 0) {
+                displayShowcaseImage(showcaseCarousel.index + 1);
+            } else {
+                displayShowcaseImage(showcaseCarousel.index - 1);
+            }
+        }
+    }, { passive: true });
+
     document.addEventListener('keydown', (event) => {
-        const overlay = document.getElementById('showcase-overlay');
-        if (event.key === 'Escape' && overlay?.classList.contains('active')) {
+        const activeOverlay = document.getElementById('showcase-overlay');
+        if (!activeOverlay?.classList.contains('active')) {
+            return;
+        }
+
+        if (event.key === 'Escape') {
             closeShowcaseOverlay();
+        } else if (event.key === 'ArrowLeft') {
+            event.preventDefault();
+            displayShowcaseImage(showcaseCarousel.index - 1);
+        } else if (event.key === 'ArrowRight') {
+            event.preventDefault();
+            displayShowcaseImage(showcaseCarousel.index + 1);
         }
     });
 }
