@@ -796,12 +796,20 @@
                     const audioWrapper = audioElement.parentElement;
                     const audioExtensions = ['mp3', 'wav', 'm4a'];
                     let audioFound = false;
+                    let audioChecksCompleted = 0;
+                    
+                    const hideAudioIfAllChecksFailed = () => {
+                        audioChecksCompleted++;
+                        if (audioChecksCompleted === audioExtensions.length && !audioFound && audioWrapper) {
+                            audioWrapper.style.display = 'none';
+                        }
+                    };
                     
                     audioExtensions.forEach(ext => {
                         if (audioFound) return;
                         const testPath = `${pieceFolder}/audio.${ext}`;
                         const testAudio = new Audio();
-                        testAudio.oncanplay = () => {
+                        const handleAudioFound = () => {
                             if (audioFound) return;
                             audioFound = true;
                             
@@ -815,6 +823,7 @@
                             
                             // Replace audio element with play button
                             if (audioWrapper && !audioWrapper.querySelector('.media-play-button')) {
+                                audioWrapper.style.display = '';
                                 const playbackAudio = new Audio(detectedPath);
                                 
                                 const playButton = document.createElement('button');
@@ -851,16 +860,11 @@
                                 audioWrapper.appendChild(playButton);
                             }
                         };
-                        testAudio.onerror = () => {};
+                        testAudio.onloadedmetadata = handleAudioFound;
+                        testAudio.oncanplay = handleAudioFound;
+                        testAudio.onerror = hideAudioIfAllChecksFailed;
                         testAudio.src = testPath;
                     });
-                    
-                    // If no audio file is found, hide the audio wrapper completely
-                    setTimeout(() => {
-                        if (!audioFound && audioWrapper) {
-                            audioWrapper.style.display = 'none';
-                        }
-                    }, 1500);
                 }
             });
         }
