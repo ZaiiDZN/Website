@@ -12,7 +12,7 @@
             background-color: #000;
         }
         
-        .pdf-viewer-page {
+        .portfolio-page {
             position: fixed;
             top: 0;
             left: 0;
@@ -65,35 +65,44 @@
             margin-top: 3rem;
             overflow: auto;
             background-color: #000;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            box-sizing: border-box;
+            text-align: center;
         }
-        
-        .pdf-container {
-            width: 100%;
-            min-height: 100%;
-            transform-origin: top left;
-            transition: transform 0.1s ease-out;
-            background-color: #000;
+
+        .portfolio-notice {
+            max-width: 36rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         }
-        
-        .pdf-viewer {
-            width: 100%;
-            min-height: 100vh;
-            border: none;
-            display: block;
-            background-color: #000;
+
+        .portfolio-notice h1 {
+            margin: 0 0 1rem;
+            font-size: clamp(2rem, 6vw, 4rem);
+            font-weight: 300;
+            letter-spacing: -0.04em;
+            text-transform: lowercase;
         }
-        
-        .pdf-viewer iframe {
-            width: 100%;
-            min-height: 100vh;
-            border: none;
-            display: block;
-            background-color: #000;
+
+        .portfolio-notice p {
+            margin: 0.75rem 0;
+            color: rgba(255, 255, 255, 0.72);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .portfolio-notice a {
+            color: #fff;
+            text-decoration: underline;
+            text-underline-offset: 0.2em;
         }
     </style>
 </head>
 <body>
-    <main class="pdf-viewer-page">
+    <main class="portfolio-page">
         <div class="pdf-header">
             <div class="pdf-header-links">
                 <a href="index.html">home</a>
@@ -102,90 +111,13 @@
         </div>
         
         <div class="page-content">
-            <div class="pdf-container" id="pdf-container">
-                <iframe 
-                    class="pdf-viewer" 
-                    id="portfolio-pdf"
-                    type="application/pdf"
-                    title="Architecture Portfolio (Spring 2026)">
-                    <p>Your browser does not support PDFs. <a id="portfolio-pdf-download" href="images/architecture-portfolio/portfolio.pdf">Download the PDF</a>.</p>
-                </iframe>
-            </div>
+            <section class="portfolio-notice" aria-labelledby="portfolio-title">
+                <h1 id="portfolio-title">Architecture Portfolio</h1>
+                <p>This portfolio is temporarily unavailable while a public-safe version is prepared.</p>
+                <p>Please <a href="contact.html">get in touch</a> for portfolio access.</p>
+            </section>
         </div>
     </main>
-    
-    <script>
-        const portfolioPdfPath = 'images/architecture-portfolio/portfolio.pdf';
-
-        async function loadPortfolioPdf() {
-            const iframe = document.getElementById('portfolio-pdf');
-            const downloadLink = document.getElementById('portfolio-pdf-download');
-            if (!iframe) return;
-
-            let cacheBust = Date.now();
-            try {
-                const response = await fetch(portfolioPdfPath, { method: 'HEAD' });
-                if (response.ok) {
-                    const lastModified = response.headers.get('Last-Modified');
-                    if (lastModified) {
-                        cacheBust = new Date(lastModified).getTime();
-                    }
-                }
-            } catch (error) {
-                console.warn('Could not read PDF cache version:', error);
-            }
-
-            const pdfUrl = `${portfolioPdfPath}?v=${cacheBust}`;
-            iframe.src = `${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`;
-            if (downloadLink) {
-                downloadLink.href = pdfUrl;
-            }
-        }
-
-        loadPortfolioPdf();
-
-        let scale = 1;
-        const minScale = 0.25;
-        const maxScale = 5;
-        const scaleStep = 0.1;
-        const container = document.getElementById('pdf-container');
-        const pageContent = document.querySelector('.page-content');
-        
-        if (container && pageContent) {
-            // Trackpad/Mouse wheel zoom
-            pageContent.addEventListener('wheel', (e) => {
-                // Check if Cmd (Mac) or Ctrl (Windows/Linux) is pressed
-                if (e.metaKey || e.ctrlKey) {
-                    e.preventDefault();
-                    
-                    const delta = e.deltaY > 0 ? -scaleStep : scaleStep;
-                    scale = Math.max(minScale, Math.min(maxScale, scale + delta));
-                    container.style.transform = `scale(${scale})`;
-                }
-            }, { passive: false });
-        }
-        
-        // Keyboard zoom (Cmd/Ctrl + Plus/Minus)
-        document.addEventListener('keydown', (e) => {
-            if (!container) return;
-            
-            if ((e.metaKey || e.ctrlKey) && !e.shiftKey) {
-                if (e.key === '=' || e.key === '+') {
-                    e.preventDefault();
-                    scale = Math.min(maxScale, scale + scaleStep);
-                    container.style.transform = `scale(${scale})`;
-                } else if (e.key === '-' || e.key === '_') {
-                    e.preventDefault();
-                    scale = Math.max(minScale, scale - scaleStep);
-                    container.style.transform = `scale(${scale})`;
-                } else if (e.key === '0') {
-                    e.preventDefault();
-                    scale = 1;
-                    container.style.transform = `scale(${scale})`;
-                }
-            }
-        });
-    </script>
 </body>
 </html>
 
