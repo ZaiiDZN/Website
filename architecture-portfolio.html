@@ -9,21 +9,18 @@
         body {
             margin: 0;
             padding: 0;
-            background-color: #000;
+            background-color: #ffffff;
         }
         
-        .pdf-viewer-page {
-            position: fixed;
-            top: 0;
-            left: 0;
+        .portfolio-request-page {
             width: 100%;
-            height: 100vh;
-            background-color: #000;
+            min-height: 100vh;
+            background-color: #ffffff;
             display: flex;
             flex-direction: column;
         }
         
-        .pdf-header {
+        .portfolio-header {
             position: fixed;
             top: 0;
             left: 0;
@@ -37,13 +34,13 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         
-        .pdf-header-links {
+        .portfolio-header-links {
             display: flex;
             gap: 1.5rem;
             align-items: center;
         }
         
-        .pdf-header-links a {
+        .portfolio-header-links a {
             color: rgba(0, 0, 0, 0.64);
             text-decoration: none;
             font-size: 0.9rem;
@@ -54,138 +51,63 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         }
         
-        .pdf-header-links a:hover {
+        .portfolio-header-links a:hover {
             color: var(--primary-color);
         }
         
         .page-content {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            margin-top: 3rem;
-            overflow: auto;
-            background-color: #000;
+            width: min(720px, calc(100% - 3rem));
+            margin: 9rem auto 0;
+            color: #1a1a1a;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         }
         
-        .pdf-container {
-            width: 100%;
-            min-height: 100%;
-            transform-origin: top left;
-            transition: transform 0.1s ease-out;
-            background-color: #000;
+        .portfolio-request-card {
+            border: 1px solid rgba(0, 0, 0, 0.14);
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.9);
         }
         
-        .pdf-viewer {
-            width: 100%;
-            min-height: 100vh;
-            border: none;
-            display: block;
-            background-color: #000;
+        .portfolio-request-card h1 {
+            margin: 0 0 1rem;
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 300;
+            letter-spacing: -0.04em;
         }
         
-        .pdf-viewer iframe {
-            width: 100%;
-            min-height: 100vh;
-            border: none;
-            display: block;
-            background-color: #000;
+        .portfolio-request-card p {
+            margin: 0 0 1rem;
+            line-height: 1.5;
+            color: rgba(0, 0, 0, 0.72);
+        }
+
+        .portfolio-request-card p:last-child {
+            margin-bottom: 0;
+        }
+
+        .portfolio-request-card a {
+            color: inherit;
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <main class="pdf-viewer-page">
-        <div class="pdf-header">
-            <div class="pdf-header-links">
+    <main class="portfolio-request-page">
+        <div class="portfolio-header">
+            <div class="portfolio-header-links">
                 <a href="index.html">home</a>
                 <a href="projects.html">back</a>
             </div>
         </div>
         
         <div class="page-content">
-            <div class="pdf-container" id="pdf-container">
-                <iframe 
-                    class="pdf-viewer" 
-                    id="portfolio-pdf"
-                    type="application/pdf"
-                    title="Architecture Portfolio (Spring 2026)">
-                    <p>Your browser does not support PDFs. <a id="portfolio-pdf-download" href="images/architecture-portfolio/portfolio.pdf">Download the PDF</a>.</p>
-                </iframe>
+            <div class="portfolio-request-card">
+                <h1>architecture portfolio.</h1>
+                <p>The architecture portfolio is available upon request.</p>
+                <p>Please use the <a href="contact.html">contact form</a> for portfolio access.</p>
             </div>
         </div>
     </main>
-    
-    <script>
-        const portfolioPdfPath = 'images/architecture-portfolio/portfolio.pdf';
-
-        async function loadPortfolioPdf() {
-            const iframe = document.getElementById('portfolio-pdf');
-            const downloadLink = document.getElementById('portfolio-pdf-download');
-            if (!iframe) return;
-
-            let cacheBust = Date.now();
-            try {
-                const response = await fetch(portfolioPdfPath, { method: 'HEAD' });
-                if (response.ok) {
-                    const lastModified = response.headers.get('Last-Modified');
-                    if (lastModified) {
-                        cacheBust = new Date(lastModified).getTime();
-                    }
-                }
-            } catch (error) {
-                console.warn('Could not read PDF cache version:', error);
-            }
-
-            const pdfUrl = `${portfolioPdfPath}?v=${cacheBust}`;
-            iframe.src = `${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`;
-            if (downloadLink) {
-                downloadLink.href = pdfUrl;
-            }
-        }
-
-        loadPortfolioPdf();
-
-        let scale = 1;
-        const minScale = 0.25;
-        const maxScale = 5;
-        const scaleStep = 0.1;
-        const container = document.getElementById('pdf-container');
-        const pageContent = document.querySelector('.page-content');
-        
-        if (container && pageContent) {
-            // Trackpad/Mouse wheel zoom
-            pageContent.addEventListener('wheel', (e) => {
-                // Check if Cmd (Mac) or Ctrl (Windows/Linux) is pressed
-                if (e.metaKey || e.ctrlKey) {
-                    e.preventDefault();
-                    
-                    const delta = e.deltaY > 0 ? -scaleStep : scaleStep;
-                    scale = Math.max(minScale, Math.min(maxScale, scale + delta));
-                    container.style.transform = `scale(${scale})`;
-                }
-            }, { passive: false });
-        }
-        
-        // Keyboard zoom (Cmd/Ctrl + Plus/Minus)
-        document.addEventListener('keydown', (e) => {
-            if (!container) return;
-            
-            if ((e.metaKey || e.ctrlKey) && !e.shiftKey) {
-                if (e.key === '=' || e.key === '+') {
-                    e.preventDefault();
-                    scale = Math.min(maxScale, scale + scaleStep);
-                    container.style.transform = `scale(${scale})`;
-                } else if (e.key === '-' || e.key === '_') {
-                    e.preventDefault();
-                    scale = Math.max(minScale, scale - scaleStep);
-                    container.style.transform = `scale(${scale})`;
-                } else if (e.key === '0') {
-                    e.preventDefault();
-                    scale = 1;
-                    container.style.transform = `scale(${scale})`;
-                }
-            }
-        });
-    </script>
 </body>
 </html>
 
