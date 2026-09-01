@@ -1346,11 +1346,12 @@
             const maxFiles = 50; // Reasonable limit
             
             while (foundFiles < maxFiles) {
-                // Try common extensions
+                // GitHub Pages paths are case-sensitive; keep uppercase media variants
+                // so numbered extras do not truncate at files like 7.MOV.
                 const extensions = [
-                    ['jpg', 'jpeg', 'png', 'gif', 'webp'],
-                    ['mp4', 'mov', 'webm'],
-                    ['mp3', 'wav', 'm4a']
+                    ['jpg', 'jpeg', 'png', 'gif', 'webp', 'JPG', 'JPEG', 'PNG', 'GIF', 'WEBP'],
+                    ['mp4', 'mov', 'webm', 'MP4', 'MOV', 'WEBM'],
+                    ['mp3', 'wav', 'm4a', 'MP3', 'WAV', 'M4A']
                 ];
                 
                 let fileFound = false;
