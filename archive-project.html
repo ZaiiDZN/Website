@@ -169,6 +169,36 @@
         const imageOverlay = document.getElementById('image-overlay');
         const imageOverlayBackdrop = document.getElementById('image-overlay-backdrop');
         const imageOverlayImage = document.getElementById('image-overlay-image');
+        const ARCHIVE_IMAGE_EXTENSIONS = ['jpeg', 'jpg', 'png'];
+
+        // Resolve the on-disk archive main image path.
+        // Assets live at images/archive-project/{id}/1.jpeg (not {id}.jpg or 1.jpg).
+        function getArchivePieceImageFallbackPath(imageId, extensionIndex = 0) {
+            const ext = ARCHIVE_IMAGE_EXTENSIONS[extensionIndex] || ARCHIVE_IMAGE_EXTENSIONS[0];
+            return `images/archive-project/${imageId}/1.${ext}`;
+        }
+
+        function resolveArchivePieceImageSrc(imageId, actualImg) {
+            if (actualImg) {
+                const loadedSrc = actualImg.currentSrc || actualImg.getAttribute('src') || actualImg.src;
+                if (loadedSrc) return loadedSrc;
+            }
+            if (!imageId) return '';
+            return getArchivePieceImageFallbackPath(imageId, 0);
+        }
+
+        function attachArchiveImageExtensionFallback(imgEl, imageId) {
+            if (!imgEl || !imageId) return;
+            let extensionIndex = 0;
+            imgEl.onerror = function() {
+                extensionIndex += 1;
+                if (extensionIndex >= ARCHIVE_IMAGE_EXTENSIONS.length) {
+                    imgEl.onerror = null;
+                    return;
+                }
+                imgEl.src = getArchivePieceImageFallbackPath(imageId, extensionIndex);
+            };
+        }
 
         clickableImages.forEach(img => {
             img.addEventListener('click', function(e) {
@@ -176,23 +206,20 @@
                 const title = this.getAttribute('data-image-title');
                 const imageId = this.getAttribute('data-project-image');
                 
-                // Find the actual image if it's been loaded
+                // Prefer the already-loaded gallery image; otherwise use the folder/1.* path
                 const actualImg = this.querySelector('img');
-                let imageSrc = '';
-                
-                if (actualImg) {
-                    imageSrc = actualImg.src;
-                } else {
-                    // Try to construct the path
-                    imageSrc = `images/archive-project/${imageId}.jpg`;
-                }
+                const imageSrc = resolveArchivePieceImageSrc(imageId, actualImg);
                 
                 // Update overlay with image
-                const overlayImg = imageOverlayImage.querySelector('img');
-                if (overlayImg) {
+                let overlayImg = imageOverlayImage.querySelector('img');
+                if (!overlayImg) {
+                    imageOverlayImage.innerHTML = `<img alt="${title || ''}" style="max-width: 90%; height: auto; object-fit: contain; display: block; margin: 0 auto;">`;
+                    overlayImg = imageOverlayImage.querySelector('img');
+                }
+                if (overlayImg && imageSrc) {
+                    overlayImg.alt = title || '';
+                    attachArchiveImageExtensionFallback(overlayImg, imageId);
                     overlayImg.src = imageSrc;
-                } else {
-                    imageOverlayImage.innerHTML = `<img src="${imageSrc}" alt="${title}" style="max-width: 90%; height: auto; object-fit: contain; display: block; margin: 0 auto;">`;
                 }
                 
                 imageOverlay.classList.add('active');
@@ -261,16 +288,9 @@
                 const caption = captionEl ? captionEl.textContent.replace(/\s+/g, ' ').trim() : '';
                 const imageId = imagePlaceholder ? imagePlaceholder.getAttribute('data-project-image') : '';
                 
-                // Try to find the actual image
+                // Prefer loaded gallery image; fallback matches images/archive-project/{id}/1.jpeg
                 const actualImg = imagePlaceholder ? imagePlaceholder.querySelector('img') : null;
-                let imageSrc = '';
-                
-                if (actualImg) {
-                    imageSrc = actualImg.src;
-                } else if (imageId) {
-                    // Try to construct the path - check if folder structure exists
-                    imageSrc = `images/archive-project/${imageId}/1.jpg`;
-                }
+                const imageSrc = resolveArchivePieceImageSrc(imageId, actualImg);
                 
                 // Update overlay content
                 archivePieceTitle.textContent = title;
@@ -278,6 +298,7 @@
                 archivePieceCaption.textContent = caption;
                 
                 if (imageSrc) {
+                    attachArchiveImageExtensionFallback(archivePiecePhoto, imageId);
                     archivePiecePhoto.src = imageSrc;
                     archivePiecePhoto.style.display = 'block';
                     
