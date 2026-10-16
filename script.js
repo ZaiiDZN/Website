@@ -228,7 +228,16 @@ document.addEventListener('keydown', function(e) {
 
 function formatPieceSize(size) {
     if (!size) return '';
-    return size.replace(/(\d+(?:\.\d+)?)(?!\s*")/g, '$1"');
+    // Match the whole number. A trailing quote means the inch mark is already present.
+    // A lookahead on an optional decimal lets the engine shrink "7.5\"" to "7" and
+    // emit "7\".5\"".
+    return size.replace(/\d+(?:\.\d+)?/g, (number, offset, full) => {
+        const after = full.slice(offset + number.length);
+        if (/^\s*"/.test(after)) {
+            return number;
+        }
+        return `${number}"`;
+    });
 }
 
 function formatNotableWorkSize(size) {
